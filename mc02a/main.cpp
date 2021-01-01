@@ -131,13 +131,13 @@ vector <point3D> projectYZ(vector <point3D> points)
 int main()
 {
 	int i,j,trans;
-	char addchoice;
+	char addchoice, axischoice;
 	vector <point3D> points;
 	vector <point3D> outputXYProj, outputXZProj, outputYZProj;
 	vector <float> readPoints;
 	vector <int> transChoices;
 	string indiv, filename, subs, ssubs, outName;
-	float conv, xTrans, yTrans, zTrans;
+	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq;
 	bool choice;
 	Transformations transf;
 	point3D testbary, testout;
@@ -251,6 +251,32 @@ int main()
 			cout << "Z:";
 			cin >> zTrans;
 			scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
+		}
+		if (transChoices[i] == 3) //Distort
+		{
+			float mDist[4][4];
+			Matrix dist(mDist);
+			cout << endl << "In what axis do you want to distort?" << endl;
+			cin >> axischoice;
+			cout << "How much?" << endl;
+			cout << "Amount 1: ";
+			cin >> dist1;
+			cout << "Amount 2: ";
+			cin >> dist2;
+			dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
+		}
+		if (transChoices[i] == 4) //Squeeze
+		{
+			float mSque[4][4];
+			Matrix sque(mSque);
+			cout << endl << "How much in x,y,z do you want to squeeze?" << endl;
+			cout << "X:";
+			cin >> xSq;
+			cout << "Y:";
+			cin >> ySq;
+			cout << "Z:";
+			cin >> zSq;
+			sque = transf.getSqueezeMatrix(xSq, ySq, zSq); //sque is the squeeze matrix
 		}
 	}
 	//compose here after
