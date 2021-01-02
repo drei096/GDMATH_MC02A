@@ -87,8 +87,13 @@ public:
 		int i, j;
 		float mat[4][4];
 		Matrix iden3d(mat);
-		iden3d.get3DIdentity();
-		iden3d.displayMatrix(); //display
+		Matrix m1(mat);
+		Matrix m2(mat);
+		Matrix m3(mat);
+		Matrix mFinal(mat);
+		m1.get3DIdentity();
+		m2.get3DIdentity();
+		m3.get3DIdentity();
 
 		if (dir == 'l')
 			theta = -theta;
@@ -105,7 +110,7 @@ public:
 		*/
 
 		//revision
-		/*
+		
 		//EULER ANGLES
 		m1.setIndexVal(1, 1, cos(theta));
 		m1.setIndexVal(2, 2, cos(theta));
@@ -121,9 +126,13 @@ public:
 		m3.setIndexVal(2, 2, cos(theta));
 		m3.setIndexVal(0, 2, sin(theta));
 		m3.setIndexVal(2, 0, -1 * sin(theta));
-		iden3d.displayMatrix(); //display
-		return iden3d;
-		*/
+
+		mFinal = multiplyMatrix(m1,m2);
+		mFinal = multiplyMatrix(mFinal,m3);
+
+		mFinal.displayMatrix(); //display
+		return mFinal;
+		
 
 	}
 	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3
