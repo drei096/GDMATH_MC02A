@@ -107,21 +107,20 @@ public:
 		//revision
 		/*
 		//EULER ANGLES
-		if (axis == 'x'){
-			iden3d.setIndexVal(0, 0, cos(theta));
-			iden3d.setIndexVal(1, cos(theta), -1 * sin(theta));
-			iden3d.setIndexVal(2, sin(theta), cos(theta));
-		}
-		if (axis == 'y'){
-			iden3d.setIndexVal(cos(theta), 0, -1 * sin(theta));
-			iden3d.setIndexVal(1, 1, 1);
-			iden3d.setIndexVal(sin(theta), 2, cos(theta));
-		}
-		if (axis == 'z'){
-			iden3d.setIndexVal(cos(theta), -1 * sin(theta), 0);
-			iden3d.setIndexVal(sin(theta), cos(theta), 1);
-			iden3d.setIndexVal(2, 2, 2);
-		}
+		m1.setIndexVal(1, 1, cos(theta));
+		m1.setIndexVal(2, 2, cos(theta));
+		m1.setIndexVal(1, 2, sin(theta));
+		m1.setIndexVal(2, 1, -1 * sin(theta));
+
+		m2.setIndexVal(1, 1, cos(theta));
+		m2.setIndexVal(0, 0, cos(theta));
+		m2.setIndexVal(1, 0, sin(theta));
+		m2.setIndexVal(0, 1, -1 * sin(theta));
+
+		m3.setIndexVal(0, 0, cos(theta));
+		m3.setIndexVal(2, 2, cos(theta));
+		m3.setIndexVal(0, 2, sin(theta));
+		m3.setIndexVal(2, 0, -1 * sin(theta));
 		iden3d.displayMatrix(); //display
 		return iden3d;
 		*/
