@@ -5,6 +5,7 @@
 */
 
 #include<iostream>
+#include<iomanip>
 #include<cmath>
 #include<vector>
 #include<fstream>
@@ -131,17 +132,20 @@ vector <point3D> projectYZ(vector <point3D> points)
 int main()
 {
 	int i,j,trans;
-	char addchoice, axischoice;
+	char addchoice, axischoice, space;
 	vector <point3D> points;
-	vector <point3D> outputXYProj, outputXZProj, outputYZProj;
+	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist;
 	vector <float> readPoints;
 	vector <int> transChoices;
 	string indiv, filename, subs, ssubs, outName;
 	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq;
-	bool choice;
+	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4];
+	bool choice, willProject;
 	Transformations transf;
 	point3D testbary, testout;
 	point2D test2d;
+	Matrix dist(mDist);
+	Matrix oTrans(moTrans);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -215,7 +219,7 @@ int main()
 	transf.multiplyMatrix(testm1, testm2);
 	transf.multiplyWithCompo(testf, testVector);
 	cout << endl;
-	testbary = computeBarycenter(points);
+	//testbary = computeBarycenter(points);
 	//cout << testbary.x << endl << testbary.y << endl << testbary.z;
 	
 	
@@ -228,7 +232,6 @@ int main()
 	{
 		if (transChoices[i] == 1) //Translate
 		{
-			float mTrans[4][4];
 			Matrix trans(mTrans);
 			cout << endl << "How much in x,y,z do you want to translate?" << endl;
 			cout << "X:";
@@ -241,8 +244,10 @@ int main()
 		}
 		if (transChoices[i] == 2) //Scale
 		{
-			float mScal[4][4];
 			Matrix scal(mScal);
+			Matrix oTrans(moTrans);
+			cout << endl << "World space (w) or Object Space (o)? ";
+			cin >> space;
 			cout << endl << "How much in x,y,z do you want to scale?" << endl;
 			cout << "X:";
 			cin >> xTrans;
@@ -250,20 +255,40 @@ int main()
 			cin >> yTrans;
 			cout << "Z:";
 			cin >> zTrans;
-			scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
+			if (space == 'o')
+			{
+				testbary = computeBarycenter(points);
+				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
+				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans);
+				scal = transf.multiplyMatrix(oTrans, scal);
+				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
+				scal = transf.multiplyMatrix(scal, oTrans);
+			}
+			else
+				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
 		}
 		if (transChoices[i] == 3) //Distort
 		{
-			float mDist[4][4];
-			Matrix dist(mDist);
+			cout << endl << "World space (w) or Object Space (o)? ";
+			cin >> space;
 			cout << endl << "In what axis do you want to distort?" << endl;
 			cin >> axischoice;
 			cout << "How much?" << endl;
-			cout << "Amount 1: ";
+			cout << "Amount 1 (xy/yx/zx): ";
 			cin >> dist1;
-			cout << "Amount 2: ";
+			cout << "Amount 2 (xz/yz/zy): ";
 			cin >> dist2;
-			dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
+			if (space == 'o')
+			{
+				testbary = computeBarycenter(points);
+				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
+				dist = transf.getDistortMatrix(axischoice, dist1, dist2);
+				dist = transf.multiplyMatrix(oTrans, dist);
+				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
+				dist = transf.multiplyMatrix(dist, oTrans);
+			}
+			else
+				dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
 		}
 		if (transChoices[i] == 4) //Squeeze
 		{
@@ -278,8 +303,20 @@ int main()
 			cin >> zSq;
 			sque = transf.getSqueezeMatrix(xSq, ySq, zSq); //sque is the squeeze matrix
 		}
+		if (transChoices[i] == 5) //project
+		{
+			willProject = true;
+			continue;
+		}
 	}
 	//compose here after
+	
+	
+	//if (willProject == true)
+	//{
+		//call project fxn, nasa baba
+	//}
+
 
 	//write to a file yung final coord values
 	cout << "What would you like to name the output file? ";
@@ -287,8 +324,8 @@ int main()
 	outName = outName + ".txt";
 	ofstream pointsOut(outName);
 	//print here yung results to the txt file
-
 	
+
 	//close files
 	setOfPoints.close();
 	pointsOut.close();
@@ -335,3 +372,25 @@ int main()
 
 		outputXYProj holds all FINAL projected points, write na lang siya to the file
 	*/
+
+/* FOR PRINTING DISTORT VALUES TO TXT FILE
+
+		for (i = 0; i < points.size(); i++)
+		{
+			pointsOut << outDist[i].x << ',' << outDist[i].y << "," << outDist[i].z << endl;
+		}
+		*/
+
+/* F0R GETTING FINAL VALUES OF DISTORT
+* for (i = 0; i < points.size(); i++)
+	{
+		Vector p(points[i].x, points[i].y, points[i].z);
+		Vector dummyV(1, 3, 5);
+		point3D output;
+		dummyV = transf.multiplyWithCompo(dist,p);
+		output.x = dummyV.getVectorValue(0);
+		output.y = dummyV.getVectorValue(1);
+		output.z = dummyV.getVectorValue(2);
+		outDist.push_back(output);
+	}
+*/

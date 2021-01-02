@@ -143,6 +143,7 @@ public:
 		{
 			iden3d.setIndexVal(1, 0, amt1st);
 			iden3d.setIndexVal(1, 2, amt2nd);
+			iden3d.setIndexVal(0, 1, 1);
 		}
 		if (axis == 'z')
 		{

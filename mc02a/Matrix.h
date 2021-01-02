@@ -5,7 +5,6 @@ class Matrix
 {
 private:
 	float matrix[4][4]; //4x4 size para kasya sa 3d
-	float matrix2d[3][3];
 public:
 	Matrix(float input[4][4])
 	{
@@ -50,7 +49,7 @@ public:
 			cout << endl;
 		}
 	}
-	void setIndexVal(int x, int y, int val)
+	void setIndexVal(int x, int y, float val)
 	{
 		matrix[x][y] = val;
 	}
