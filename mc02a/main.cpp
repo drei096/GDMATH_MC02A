@@ -7,6 +7,7 @@
 #include<iostream>
 #include<iomanip>
 #include<cmath>
+#include<cstdlib>
 #include<vector>
 #include<fstream>
 #include<string>
@@ -134,18 +135,20 @@ int main()
 	int i,j,trans;
 	char addchoice, axischoice, space;
 	vector <point3D> points;
-	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist;
+	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
 	vector <float> readPoints;
 	vector <int> transChoices;
 	string indiv, filename, subs, ssubs, outName;
-	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq;
-	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4];
+	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset;
+	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4], mSque[4][4], mRot[4][4];
 	bool choice, willProject;
 	Transformations transf;
 	point3D testbary, testout;
 	point2D test2d;
 	Matrix dist(mDist);
 	Matrix oTrans(moTrans);
+	Matrix sque(mSque);
+	Matrix rotate(mRot);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -292,8 +295,6 @@ int main()
 		}
 		if (transChoices[i] == 4) //Squeeze
 		{
-			float mSque[4][4];
-			Matrix sque(mSque);
 			cout << endl << "How much in x,y,z do you want to squeeze?" << endl;
 			cout << "X:";
 			cin >> xSq;
@@ -308,9 +309,56 @@ int main()
 			willProject = true;
 			continue;
 		}
+		if (transChoices[i] == 6) //rotate
+		{
+			cout << "World space (w) or object space (o)?: ";
+			cin >> space;
+			cout << "What is the axis of your rotation? (x/y/z): ";
+			cin >> axischoice;
+			cout << "What is the angle of rotation? (in radians): ";
+			cin >> radians;
+			cout << "How many radians away from chosen axis is the rotation axis: ";  //from origin of axis 
+			cin >> axisOffset;
+			if (space == 'o')
+			{
+				testbary = computeBarycenter(points);
+				if (axischoice == 'x')
+					oTrans = transf.getTranslateMatrix((testbary.x - axisOffset) * -1, testbary.y, testbary.z);
+				else if (axischoice == 'y')
+					oTrans = transf.getTranslateMatrix(testbary.x, (testbary.y - axisOffset) * -1, testbary.z);
+				else
+					oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset)*-1);
+
+				rotate = transf.getRotateMatrix(radians, axischoice);
+				rotate = transf.multiplyMatrix(oTrans, rotate);
+
+				if (axischoice == 'x')
+					oTrans = transf.getTranslateMatrix(abs(testbary.x - axisOffset), testbary.y, testbary.z);
+				else if (axischoice == 'y')
+					oTrans = transf.getTranslateMatrix(testbary.x, abs(testbary.y - axisOffset), testbary.z);
+				else
+					oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
+				
+				rotate = transf.multiplyMatrix(rotate, oTrans);
+			}
+			else //if rotation is world space
+			{
+				rotate = transf.getRotateMatrix(radians, axischoice);
+			}
+		}
 	}
 	//compose here after
-	
+	for (i = 0; i < points.size(); i++)
+	{
+		Vector p(points[i].x, points[i].y, points[i].z);
+		Vector dummyV(1, 3, 5);
+		point3D output;
+		dummyV = transf.multiplyWithCompo(rotate, p);
+		output.x = dummyV.getVectorValue(0);
+		output.y = dummyV.getVectorValue(1);
+		output.z = dummyV.getVectorValue(2);
+		outRot.push_back(output);
+	}
 	
 	//if (willProject == true)
 	//{
@@ -324,7 +372,10 @@ int main()
 	outName = outName + ".txt";
 	ofstream pointsOut(outName);
 	//print here yung results to the txt file
-	
+	for (i = 0; i < points.size(); i++)
+	{
+		pointsOut << outRot[i].x << ',' << outRot[i].y << "," << outRot[i].z << endl;
+	}
 
 	//close files
 	setOfPoints.close();

@@ -82,7 +82,7 @@ public:
 		//productVector.displayVector();
 		return productVector;
 	}
-	Matrix getRotateMatrix(float theta, char dir, char axis) //c counterclockwise, l clockwise
+	Matrix getRotateMatrix(float theta, char axis) //c counterclockwise, l clockwise
 	{
 		int i, j;
 		float mat[4][4];
@@ -95,45 +95,36 @@ public:
 		m2.get3DIdentity();
 		m3.get3DIdentity();
 
-		if (dir == 'l')
-			theta = -theta;
-		theta = theta * (PI / 180.0); //conv to radians
+		//theta = theta * (PI / 180.0); //conv to radians
 
-		/* PANG 2D PALA TO HAHAHA AWIT NAMAN FUCK EULER ANGLES
-		* may nakita ako implementation by quaternions tho, hanapin ko HAHAHAH
-		iden3d.setIndexVal(0, 0, cos(theta));
-		iden3d.setIndexVal(1, 1, cos(theta));
-		iden3d.setIndexVal(0, 1, -1 * sin(theta));
-		iden3d.setIndexVal(1, 0, sin(theta));
-		iden3d.displayMatrix(); //display
-		return iden3d;
-		*/
-
-		//revision
-		
 		//EULER ANGLES
-		m1.setIndexVal(1, 1, cos(theta));
-		m1.setIndexVal(2, 2, cos(theta));
-		m1.setIndexVal(1, 2, sin(theta));
-		m1.setIndexVal(2, 1, -1 * sin(theta));
-
-		m2.setIndexVal(1, 1, cos(theta));
-		m2.setIndexVal(0, 0, cos(theta));
-		m2.setIndexVal(1, 0, sin(theta));
-		m2.setIndexVal(0, 1, -1 * sin(theta));
-
-		m3.setIndexVal(0, 0, cos(theta));
-		m3.setIndexVal(2, 2, cos(theta));
-		m3.setIndexVal(0, 2, sin(theta));
-		m3.setIndexVal(2, 0, -1 * sin(theta));
-
-		mFinal = multiplyMatrix(m1,m2);
-		mFinal = multiplyMatrix(mFinal,m3);
-
-		mFinal.displayMatrix(); //display
-		return mFinal;
-		
-
+		if (axis == 'x')
+		{
+			m1.setIndexVal(0, 0, 1);
+			m1.setIndexVal(1, 1, cos(theta));
+			m1.setIndexVal(2, 2, cos(theta));
+			m1.setIndexVal(1, 2, sin(theta));
+			m1.setIndexVal(2, 1, -1 * sin(theta));
+			return m1;
+		}
+		if (axis == 'y')
+		{
+			m2.setIndexVal(1, 1, 1);
+			m2.setIndexVal(0, 0, cos(theta));
+			m2.setIndexVal(2, 2, cos(theta));
+			m2.setIndexVal(2, 0, sin(theta));
+			m2.setIndexVal(0, 2, -1 * sin(theta));
+			return m2;
+		}
+		if (axis == 'z')
+		{
+			m3.setIndexVal(0, 0, cos(theta));
+			m3.setIndexVal(1, 1, cos(theta));
+			m3.setIndexVal(0, 1, sin(theta));
+			m3.setIndexVal(1, 0, -1 * sin(theta));
+			m3.setIndexVal(2, 2, 1);
+			return m3;
+		}
 	}
 	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3
 	{
@@ -182,6 +173,5 @@ public:
 		newCompo = transf.multiplyMatrix(mc, mt);
 		return newCompo;
 	}
-	
 };
 
