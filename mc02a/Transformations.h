@@ -112,8 +112,8 @@ public:
 			m2.setIndexVal(1, 1, 1);
 			m2.setIndexVal(0, 0, cos(theta));
 			m2.setIndexVal(2, 2, cos(theta));
-			m2.setIndexVal(2, 0, sin(theta));
-			m2.setIndexVal(0, 2, -1 * sin(theta));
+			m2.setIndexVal(2, 0, -1 * sin(theta));
+			m2.setIndexVal(0, 2, sin(theta));
 			return m2;
 		}
 		if (axis == 'z')
