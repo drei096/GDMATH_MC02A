@@ -90,12 +90,9 @@ public:
 		Matrix m1(mat);
 		Matrix m2(mat);
 		Matrix m3(mat);
-		Matrix mFinal(mat);
 		m1.get3DIdentity();
 		m2.get3DIdentity();
 		m3.get3DIdentity();
-
-		//theta = theta * (PI / 180.0); //conv to radians
 
 		//EULER ANGLES
 		if (axis == 'x')
@@ -172,6 +169,27 @@ public:
 		Matrix newCompo(mat);
 		newCompo = transf.multiplyMatrix(mc, mt);
 		return newCompo;
+	}
+	Matrix getRotateArbitrary(float theta, float x, float y, float z)
+	{
+		float mat[4][4];
+		Matrix iden3d(mat);
+		iden3d.get3DIdentity();
+
+		iden3d.setIndexVal(0, 0, (x*x) * (1 - cos(theta)) + cos(theta));
+		iden3d.setIndexVal(1, 0, x * (1 - cos(theta)) * y - (z * sin(theta)));
+		iden3d.setIndexVal(2, 0, z * (1 - cos(theta)) * x + (y * sin(theta)));
+		iden3d.setIndexVal(0, 1, x * (1 - cos(theta)) * y + (z * sin(theta)));
+		iden3d.setIndexVal(1, 1, (y*y) * (1 - cos(theta)) + cos(theta));
+		iden3d.setIndexVal(2, 1, z * (1 - cos(theta)) * y - (x * sin(theta)));
+		iden3d.setIndexVal(0, 2, x * z * (1 - cos(theta)) - (y * sin(theta)));
+		iden3d.setIndexVal(1, 2, z * y * (1 - cos(theta)) + (x * sin(theta)));
+		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
+		return iden3d;
+	}
+	float normalize(float px, float py, float pz)
+	{
+		return sqrt((px * px) + (py * py) + (pz * pz));
 	}
 };
 

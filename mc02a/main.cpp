@@ -133,17 +133,17 @@ vector <point3D> projectYZ(vector <point3D> points)
 int main()
 {
 	int i,j,trans;
-	char addchoice, axischoice, space;
+	char addchoice, axischoice, space, axisRot;
 	vector <point3D> points;
 	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
 	vector <float> readPoints;
 	vector <int> transChoices;
 	string indiv, filename, subs, ssubs, outName;
-	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset;
+	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset, normVal;
 	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4], mSque[4][4], mRot[4][4];
-	bool choice, willProject;
+	bool choice, willProject = false;
 	Transformations transf;
-	point3D testbary, testout;
+	point3D testbary, testout, arbitAxis;
 	point2D test2d;
 	Matrix dist(mDist);
 	Matrix oTrans(moTrans);
@@ -313,37 +313,55 @@ int main()
 		{
 			cout << "World space (w) or object space (o)?: ";
 			cin >> space;
-			cout << "What is the axis of your rotation? (x/y/z): ";
-			cin >> axischoice;
-			cout << "What is the angle of rotation? (in radians): ";
-			cin >> radians;
-			cout << "How many radians away from chosen axis is the rotation axis: ";  //from origin of axis 
-			cin >> axisOffset;
-			if (space == 'o')
+			cout << "Axis rotation (a) or Arbitrary Axis Rotation (r)? :";
+			cin >> axisRot;
+			if (axisRot == 'a')
 			{
-				testbary = computeBarycenter(points);
-				if (axischoice == 'x')
-					oTrans = transf.getTranslateMatrix((testbary.x - axisOffset) * -1, testbary.y, testbary.z);
-				else if (axischoice == 'y')
-					oTrans = transf.getTranslateMatrix(testbary.x, (testbary.y - axisOffset) * -1, testbary.z);
-				else
-					oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset)*-1);
+				cout << "What is the axis of your rotation? (x/y/z): ";
+				cin >> axischoice;
+				cout << "What is the angle of rotation? (in radians): ";
+				cin >> radians;
+				cout << "How many radians away from chosen axis is the rotation axis: ";  //from origin of axis 
+				cin >> axisOffset;
+				if (space == 'o')
+				{
+					testbary = computeBarycenter(points);
+					if (axischoice == 'x')
+						oTrans = transf.getTranslateMatrix((testbary.x - axisOffset) * -1, testbary.y, testbary.z);
+					else if (axischoice == 'y')
+						oTrans = transf.getTranslateMatrix(testbary.x, (testbary.y - axisOffset) * -1, testbary.z);
+					else
+						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
-				rotate = transf.getRotateMatrix(radians, axischoice);
-				rotate = transf.multiplyMatrix(oTrans, rotate);
+					rotate = transf.getRotateMatrix(radians, axischoice);
+					rotate = transf.multiplyMatrix(oTrans, rotate);
 
-				if (axischoice == 'x')
-					oTrans = transf.getTranslateMatrix(abs(testbary.x - axisOffset), testbary.y, testbary.z);
-				else if (axischoice == 'y')
-					oTrans = transf.getTranslateMatrix(testbary.x, abs(testbary.y - axisOffset), testbary.z);
-				else
-					oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
-				
-				rotate = transf.multiplyMatrix(rotate, oTrans);
+					if (axischoice == 'x')
+						oTrans = transf.getTranslateMatrix(abs(testbary.x - axisOffset), testbary.y, testbary.z);
+					else if (axischoice == 'y')
+						oTrans = transf.getTranslateMatrix(testbary.x, abs(testbary.y - axisOffset), testbary.z);
+					else
+						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
+
+					rotate = transf.multiplyMatrix(rotate, oTrans);
+				}
+				else //if rotation is world space
+				{
+					rotate = transf.getRotateMatrix(radians, axischoice);
+				}
 			}
-			else //if rotation is world space
+			else //arbitrary axis rotation
 			{
-				rotate = transf.getRotateMatrix(radians, axischoice);
+				cout << "What is the angle of rotation? (in radians): ";
+				cin >> radians;
+				cout << "Vector Axis X: ";
+				cin >> arbitAxis.x;
+				cout << "Vector Axis Y: ";
+				cin >> arbitAxis.y;
+				cout << "Vector Axis Z: ";
+				cin >> arbitAxis.z;
+				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
+				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
 			}
 		}
 	}
@@ -359,6 +377,7 @@ int main()
 		output.z = dummyV.getVectorValue(2);
 		outRot.push_back(output);
 	}
+	
 	
 	//if (willProject == true)
 	//{
