@@ -149,6 +149,7 @@ int main()
 	Matrix oTrans(moTrans);
 	Matrix sque(mSque);
 	Matrix rotate(mRot);
+	Matrix rotateYarb(mRot);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -361,7 +362,27 @@ int main()
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
 				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
-				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
+				testbary = computeBarycenter(points);
+				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, (testbary.z) * -1); //trans to origin
+				rotate = transf.getRotateArbitrary(radians, arbitAxis.x, arbitAxis.y , arbitAxis.z );
+				rotate = transf.multiplyMatrix(oTrans, rotate);
+				oTrans = transf.getTranslateMatrix(testbary.x , testbary.y, (testbary.z)); //back to orig place
+				rotate = transf.multiplyMatrix(oTrans, rotate);
+				/*
+				
+				testbary = computeBarycenter(points);
+				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, (testbary.z) * -1); //trans to origin
+				rotate = transf.getRotateMatrix(radians, 'x'); //rotate about x
+				rotate = transf.multiplyMatrix(oTrans, rotate);
+				rotateYarb = transf.getRotateMatrix(radians, 'y'); //rotate about y
+				rotate = transf.multiplyMatrix(rotate, rotateYarb);
+
+
+				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z));
+				rotate = transf.multiplyMatrix(oTrans, rotate);
+				*/
+				//
+				//rotate = transf.getRotateArbitrary(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z);
 			}
 		}
 	}

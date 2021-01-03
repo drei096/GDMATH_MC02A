@@ -179,9 +179,11 @@ public:
 		iden3d.setIndexVal(0, 0, (x*x) * (1 - cos(theta)) + cos(theta));
 		iden3d.setIndexVal(1, 0, x * (1 - cos(theta)) * y - (z * sin(theta)));
 		iden3d.setIndexVal(2, 0, z * (1 - cos(theta)) * x + (y * sin(theta)));
+
 		iden3d.setIndexVal(0, 1, x * (1 - cos(theta)) * y + (z * sin(theta)));
 		iden3d.setIndexVal(1, 1, (y*y) * (1 - cos(theta)) + cos(theta));
 		iden3d.setIndexVal(2, 1, z * (1 - cos(theta)) * y - (x * sin(theta)));
+
 		iden3d.setIndexVal(0, 2, x * z * (1 - cos(theta)) - (y * sin(theta)));
 		iden3d.setIndexVal(1, 2, z * y * (1 - cos(theta)) + (x * sin(theta)));
 		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
