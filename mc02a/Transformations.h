@@ -71,14 +71,16 @@ public:
 		int rowIndex;
 		float dprod;
 		Vector productVector(1,2,3);
+		
 		for (rowIndex = 0; rowIndex < 4; rowIndex++)
 		{
 			Vector dummyV(1, 2, 3);
 			dummyV = dummyV.getRow(c, rowIndex);
+			
 			dprod = transf.dotProd(dummyV, p);
 			productVector.setVectorVals(dprod, rowIndex);
 		}
-		cout << endl;
+		//cout << endl;
 		//productVector.displayVector();
 		return productVector;
 	}

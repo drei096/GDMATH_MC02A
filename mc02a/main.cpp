@@ -150,7 +150,7 @@ int main()
 	Matrix sque(mSque);
 	Matrix rotate(mRot);
 	Matrix rotateZarb(mRot);
-	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), trans(mTrans);
+	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), translateMatrix(mTrans);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -204,32 +204,8 @@ int main()
 			choice = false;
 	}
 	
-	transf.getScaleMatrix(2, 3, 2); // creates and displays a scale matrix that scales 2 in x, 3 in y, 2 in z
-	transf.getTranslateMatrix(5, 3, 5); // creates and displays a trans matrix that moves 5 in x, 3 in y, 5 in z
-	float testf[4][4] = {
-		{1,2,3,0},
-		{1,1,2,0},
-		{1,1,1,0},   //try mo palitan values ng zero, matic pa rin siya nagcoconvert to homog
-		{0,0,0,1}
-	};
-	float testf2[4][4] = {
-		{1,2,3,0},
-		{1,2,2,0},
-		{2,1,1,0},	//try mo palitan values ng zero, matic pa rin siya nagcoconvert to homog
-		{0,0,0,1}
-	};
-	Matrix testm1(testf);
-	Matrix testm2(testf2);
-	Vector testVector(1, 2, 3);
-	transf.multiplyMatrix(testm1, testm2);
-	transf.multiplyWithCompo(testf, testVector);
-	cout << endl;
-	//testbary = computeBarycenter(points);
-	//cout << testbary.x << endl << testbary.y << endl << testbary.z;
-	
-	
-	//projectXZ(points);
-	//projectYZ(points);
+	//transf.getScaleMatrix(2, 3, 2); // creates and displays a scale matrix that scales 2 in x, 3 in y, 2 in z
+	//transf.getTranslateMatrix(5, 3, 5); // creates and displays a trans matrix that moves 5 in x, 3 in y, 5 in z
 	
 
 	//perform transformations, return matrices
@@ -244,7 +220,8 @@ int main()
 			cin >> yTrans;
 			cout << "Z:";
 			cin >> zTrans;
-			trans = transf.getTranslateMatrix(xTrans, yTrans, zTrans); //trans is the translate matrix
+			translateMatrix = transf.getTranslateMatrix(xTrans, yTrans, zTrans);
+			//trans is the translate matrix
 		}
 		if (transChoices[i] == 2) //Scale
 		{
@@ -416,11 +393,11 @@ int main()
 		Vector dummyV(1, 3, 5);
 		point3D output;
 		
+		//finalCompo = transf.multiplyMatrix(rotate, scal);
+		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
+		//finalCompo.displayMatrix();
+		dummyV = transf.multiplyWithCompo(translateMatrix , p);
 		
-		finalCompo = transf.multiplyMatrix(rotate, scal);
-		finalCompo = transf.multiplyMatrix(finalCompo, trans);
-		
-		dummyV = transf.multiplyWithCompo(rotate, p);
 		output.x = dummyV.getVectorValue(0);
 		output.y = dummyV.getVectorValue(1);
 		output.z = dummyV.getVectorValue(2);
