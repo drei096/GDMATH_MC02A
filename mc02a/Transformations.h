@@ -12,12 +12,12 @@ public:
 		float mat[4][4];
 		Matrix iden3d(mat);
 		iden3d.get3DIdentity();
-		iden3d.displayMatrix(); //display
+		//iden3d.displayMatrix(); //display
 
 		iden3d.setIndexVal(0, 3, x);
 		iden3d.setIndexVal(1, 3, y);
 		iden3d.setIndexVal(2, 3, z);
-		iden3d.displayMatrix(); //display
+		//iden3d.displayMatrix(); //display
 		return iden3d;
 	}
 	Matrix getScaleMatrix(float sx, float sy, float sz)
@@ -82,7 +82,7 @@ public:
 		//productVector.displayVector();
 		return productVector;
 	}
-	Matrix getRotateMatrix(float theta, char axis) //c counterclockwise, l clockwise
+	Matrix getRotateMatrix(float theta, char axis, bool isInverse) //c counterclockwise, l clockwise
 	{
 		int i, j;
 		float mat[4][4];
@@ -95,32 +95,65 @@ public:
 		m3.get3DIdentity();
 
 		//EULER ANGLES
-		if (axis == 'x')
+		if (isInverse == false)
 		{
-			m1.setIndexVal(0, 0, 1);
-			m1.setIndexVal(1, 1, cos(theta));
-			m1.setIndexVal(2, 2, cos(theta));
-			m1.setIndexVal(1, 2, sin(theta));
-			m1.setIndexVal(2, 1, -1 * sin(theta));
-			return m1;
+			if (axis == 'x')
+			{
+				m1.setIndexVal(0, 0, 1);
+				m1.setIndexVal(1, 1, cos(theta));
+				m1.setIndexVal(2, 2, cos(theta));
+				m1.setIndexVal(1, 2, sin(theta));
+				m1.setIndexVal(2, 1, -1 * sin(theta));
+				return m1;
+			}
+			if (axis == 'y')
+			{
+				m2.setIndexVal(1, 1, 1);
+				m2.setIndexVal(0, 0, cos(theta));
+				m2.setIndexVal(2, 2, cos(theta));
+				m2.setIndexVal(2, 0, -1 * sin(theta));
+				m2.setIndexVal(0, 2, sin(theta));
+				return m2;
+			}
+			if (axis == 'z')
+			{
+				m3.setIndexVal(0, 0, cos(theta));
+				m3.setIndexVal(1, 1, cos(theta));
+				m3.setIndexVal(0, 1, sin(theta));
+				m3.setIndexVal(1, 0, -1 * sin(theta));
+				m3.setIndexVal(2, 2, 1);
+				return m3;
+			}
 		}
-		if (axis == 'y')
+		else
 		{
-			m2.setIndexVal(1, 1, 1);
-			m2.setIndexVal(0, 0, cos(theta));
-			m2.setIndexVal(2, 2, cos(theta));
-			m2.setIndexVal(2, 0, -1 * sin(theta));
-			m2.setIndexVal(0, 2, sin(theta));
-			return m2;
-		}
-		if (axis == 'z')
-		{
-			m3.setIndexVal(0, 0, cos(theta));
-			m3.setIndexVal(1, 1, cos(theta));
-			m3.setIndexVal(0, 1, sin(theta));
-			m3.setIndexVal(1, 0, -1 * sin(theta));
-			m3.setIndexVal(2, 2, 1);
-			return m3;
+			if (axis == 'x')
+			{
+				m1.setIndexVal(0, 0, 1);
+				m1.setIndexVal(1, 1, cos(theta));
+				m1.setIndexVal(2, 2, cos(theta));
+				m1.setIndexVal(1, 2, -1 * sin(theta));
+				m1.setIndexVal(2, 1,  sin(theta));
+				return m1;
+			}
+			if (axis == 'y')
+			{
+				m2.setIndexVal(1, 1, 1);
+				m2.setIndexVal(0, 0, cos(theta));
+				m2.setIndexVal(2, 2, cos(theta));
+				m2.setIndexVal(2, 0, -1 * sin(theta));
+				m2.setIndexVal(0, 2, sin(theta));
+				return m2;
+			}
+			if (axis == 'z')
+			{
+				m3.setIndexVal(0, 0, cos(theta));
+				m3.setIndexVal(1, 1, cos(theta));
+				m3.setIndexVal(0, 1, -1 * sin(theta));
+				m3.setIndexVal(1, 0, sin(theta));
+				m3.setIndexVal(2, 2, 1);
+				return m3;
+			}
 		}
 	}
 	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3
@@ -176,18 +209,20 @@ public:
 		Matrix iden3d(mat);
 		iden3d.get3DIdentity();
 
+		
 		iden3d.setIndexVal(0, 0, (x*x) * (1 - cos(theta)) + cos(theta));
-		iden3d.setIndexVal(1, 0, x * (1 - cos(theta)) * y - (z * sin(theta)));
-		iden3d.setIndexVal(2, 0, z * (1 - cos(theta)) * x + (y * sin(theta)));
+		iden3d.setIndexVal(1, 0, x * y * (1 - cos(theta)) - (z * sin(theta)));
+		iden3d.setIndexVal(2, 0, x * z * (1 - cos(theta)) + (y * sin(theta)));
 
-		iden3d.setIndexVal(0, 1, x * (1 - cos(theta)) * y + (z * sin(theta)));
+		iden3d.setIndexVal(0, 1, x * y * (1 - cos(theta)) + (z * sin(theta)));
 		iden3d.setIndexVal(1, 1, (y*y) * (1 - cos(theta)) + cos(theta));
-		iden3d.setIndexVal(2, 1, z * (1 - cos(theta)) * y - (x * sin(theta)));
+		iden3d.setIndexVal(2, 1, y * z * (1 - cos(theta)) - (x * sin(theta)));
 
-		iden3d.setIndexVal(0, 2, x * z * (1 - cos(theta)) - (y * sin(theta)));
+		iden3d.setIndexVal(0, 2, z * x * (1 - cos(theta)) - (y * sin(theta)));
 		iden3d.setIndexVal(1, 2, z * y * (1 - cos(theta)) + (x * sin(theta)));
 		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
 		return iden3d;
+		
 	}
 	float normalize(float px, float py, float pz)
 	{

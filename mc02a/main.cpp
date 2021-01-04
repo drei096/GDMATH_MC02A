@@ -132,7 +132,7 @@ vector <point3D> projectYZ(vector <point3D> points)
 
 int main()
 {
-	int i,j,trans;
+	int i,j,t;
 	char addchoice, axischoice, space, axisRot;
 	vector <point3D> points;
 	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
@@ -141,7 +141,7 @@ int main()
 	string indiv, filename, subs, ssubs, outName;
 	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset, normVal;
 	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4], mSque[4][4], mRot[4][4];
-	bool choice, willProject = false;
+	bool choice, willProject = false, isInverse = false;
 	Transformations transf;
 	point3D testbary, testout, arbitAxis;
 	point2D test2d;
@@ -149,7 +149,8 @@ int main()
 	Matrix oTrans(moTrans);
 	Matrix sque(mSque);
 	Matrix rotate(mRot);
-	Matrix rotateYarb(mRot);
+	Matrix rotateZarb(mRot);
+	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), trans(mTrans);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -193,8 +194,8 @@ int main()
 	while (choice == true)
 	{
 		cout << endl << "Select your transformations:";
-		cin >> trans;
-		transChoices.push_back(trans);
+		cin >> t;
+		transChoices.push_back(t);
 		cout << "Do you want to add another? (y/n): ";
 		cin >> addchoice;
 		if (addchoice == 'y')
@@ -236,7 +237,6 @@ int main()
 	{
 		if (transChoices[i] == 1) //Translate
 		{
-			Matrix trans(mTrans);
 			cout << endl << "How much in x,y,z do you want to translate?" << endl;
 			cout << "X:";
 			cin >> xTrans;
@@ -248,7 +248,6 @@ int main()
 		}
 		if (transChoices[i] == 2) //Scale
 		{
-			Matrix scal(mScal);
 			Matrix oTrans(moTrans);
 			cout << endl << "World space (w) or Object Space (o)? ";
 			cin >> space;
@@ -334,7 +333,7 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
-					rotate = transf.getRotateMatrix(radians, axischoice);
+					rotate = transf.getRotateMatrix(radians, axischoice, false);
 					rotate = transf.multiplyMatrix(oTrans, rotate);
 
 					if (axischoice == 'x')
@@ -348,7 +347,7 @@ int main()
 				}
 				else //if rotation is world space
 				{
-					rotate = transf.getRotateMatrix(radians, axischoice);
+					rotate = transf.getRotateMatrix(radians, axischoice, false);
 				}
 			}
 			else //arbitrary axis rotation
@@ -362,12 +361,36 @@ int main()
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
 				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
+			
+				/*
 				testbary = computeBarycenter(points);
-				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, (testbary.z) * -1); //trans to origin
-				rotate = transf.getRotateArbitrary(radians, arbitAxis.x, arbitAxis.y , arbitAxis.z );
+				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));
+				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
 				rotate = transf.multiplyMatrix(oTrans, rotate);
-				oTrans = transf.getTranslateMatrix(testbary.x , testbary.y, (testbary.z)); //back to orig place
+				*/
+				
+				/*
+				
+				testbary = computeBarycenter(points);
+
+				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x/normVal) * -1, (testbary.y - arbitAxis.y/normVal) * -1, (testbary.z - arbitAxis.z/normVal) * -1); //trans to origin
+				rotate = transf.getRotateMatrix(radians, 'x', false); //rotate about x
+				rotate = transf.multiplyMatrix(oTrans, rotate); //compo trans and rotate x
+
+				rotateZarb = transf.getRotateMatrix(radians, 'z', false); //rotate about z
+				rotate = transf.multiplyMatrix(rotateZarb, rotate); //compo rotate z and rotate x and trans
+
+				zInv = transf.getRotateMatrix(radians, 'z', true); //inverse rotate z
+				rotate = transf.multiplyMatrix(zInv, rotate);
+
+				xInv = transf.getRotateMatrix(radians, 'x', true); //inverse rotate x
+				rotate = transf.multiplyMatrix(xInv, rotate);
+
+				oTrans = transf.getTranslateMatrix(testbary.x/normVal, testbary.y/normVal, testbary.z/normVal);
 				rotate = transf.multiplyMatrix(oTrans, rotate);
+				//oTrans = transf.getTranslateMatrix(testbary.x , testbary.y, (testbary.z)); //back to orig place
+				//rotate = transf.multiplyMatrix(oTrans, rotate);
+				*/
 				/*
 				
 				testbary = computeBarycenter(points);
@@ -392,6 +415,11 @@ int main()
 		Vector p(points[i].x, points[i].y, points[i].z);
 		Vector dummyV(1, 3, 5);
 		point3D output;
+		
+		
+		finalCompo = transf.multiplyMatrix(rotate, scal);
+		finalCompo = transf.multiplyMatrix(finalCompo, trans);
+		
 		dummyV = transf.multiplyWithCompo(rotate, p);
 		output.x = dummyV.getVectorValue(0);
 		output.y = dummyV.getVectorValue(1);
