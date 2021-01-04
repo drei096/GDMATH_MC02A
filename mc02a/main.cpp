@@ -150,7 +150,7 @@ int main()
 	Matrix sque(mSque);
 	Matrix rotate(mRot);
 	Matrix rotateZarb(mRot);
-	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), translateMatrix(mTrans);
+	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -338,7 +338,7 @@ int main()
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
 				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
-			
+				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
 				/*
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));
@@ -392,15 +392,35 @@ int main()
 		Vector p(points[i].x, points[i].y, points[i].z);
 		Vector dummyV(1, 3, 5);
 		point3D output;
+		/*
+		
+		coordPts.setIndexVal(0, 0, points[i].x);
+		coordPts.setIndexVal(1, 0, points[i].y);
+		coordPts.setIndexVal(2, 0, points[i].z);
+		coordPts.setIndexVal(3, 0, 1);
+		point3D output;
+
+		finalPts = transf.multiplyMatrix(translateMatrix, coordPts);
+		*/
 		
 		//finalCompo = transf.multiplyMatrix(rotate, scal);
 		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
 		//finalCompo.displayMatrix();
-		dummyV = transf.multiplyWithCompo(translateMatrix , p);
+
+		dummyV = transf.multiplyWithCompo(rotate , p);
+		/*
 		
-		output.x = dummyV.getVectorValue(0);
-		output.y = dummyV.getVectorValue(1);
-		output.z = dummyV.getVectorValue(2);
+		if (transChoices[0] == 1)
+		{
+			dummyV.setVectorVals(points[i].x + xTrans, 0);
+			dummyV.setVectorVals(points[i].y + yTrans, 1);
+			dummyV.setVectorVals(points[i].z + zTrans, 2);
+		}
+		*/
+
+		output.x = dummyV.getVectorValue(0);//finalPts.getIndexVal(0, 0);
+		output.y = dummyV.getVectorValue(1);//finalPts.getIndexVal(1, 0);
+		output.z = dummyV.getVectorValue(2);//finalPts.getIndexVal(2, 0);
 		outRot.push_back(output);
 	}
 	

@@ -43,12 +43,16 @@ public:
 		}
 		return sum;
 	}
+
 	Matrix multiplyMatrix(Matrix m1, Matrix m2) //multiplies 2 4x4 matrices
 	{
 		Transformations transf;
-		int rowIndex, colIndex;
-		float m[4][4], dprod;
-		Matrix productMatrix(m);
+		int rowIndex, colIndex, k=0, i, j;
+		float dprod;
+		float matrixtest[4][4];
+		Matrix productMatrix(matrixtest);
+		productMatrix.get3DIdentity();
+
 		for (rowIndex = 0; rowIndex < 4; rowIndex++)
 		{
 			for (colIndex = 0; colIndex < 4; colIndex++)
@@ -56,13 +60,15 @@ public:
 				Vector dummyV(1, 2, 3);
 				Vector dummyV2(2, 3, 4);
 				dummyV = dummyV.getRow(m1, rowIndex);
+				dummyV.setVectorVals(m1.getIndexVal(rowIndex, 3), 3); //HAHAHAHA eto na pala yun yung hahanapin sa 3rd column
 				dummyV2 = dummyV2.getColumn(m2, colIndex);
+				dummyV2.setVectorVals(m2.getIndexVal(colIndex, 3), 3);
 				dprod = transf.dotProd(dummyV, dummyV2);
 				productMatrix.setIndexVal(rowIndex, colIndex, dprod);
 			}
 		}
-		cout << endl;
-		productMatrix.displayMatrix();
+		//cout << endl;
+		//productMatrix.displayMatrix();
 		return productMatrix;
 	}
 	Vector multiplyWithCompo(Matrix c, Vector p)

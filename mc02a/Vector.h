@@ -34,9 +34,12 @@ public:
 		x = m.getIndexVal(rowIndex, 0);
 		y = m.getIndexVal(rowIndex, 1);
 		z = m.getIndexVal(rowIndex, 2);
+		//a = m.getIndexVal(rowIndex, 3);
 		Vector row(x, y, z);
-		if(rowIndex < 3)
-			row.forceZero(rowIndex);
+		//if(rowIndex < 3)
+			//row.forceZero(rowIndex);
+		//row.setVectorVals(a, 3);
+		row.displayVector();
 		return row;
 	}
 	Vector getColumn(Matrix m, int colIndex)
@@ -45,15 +48,17 @@ public:
 		x = m.getIndexVal(0, colIndex);
 		y = m.getIndexVal(1, colIndex);
 		z = m.getIndexVal(2, colIndex);
+		//a = m.getIndexVal(3, colIndex);
 		Vector row(x, y, z);
-		if(colIndex < 3)
-			row.forceZero(colIndex);
+		//if(colIndex < 3)
+			//row.forceZero(colIndex);
+		//row.setVectorVals(a, 3);
 		return row;
 	}
 	void setVectorVals(float val, int index)
 	{
 		vMatrix[index] = val;
-		vMatrix[3] = 1;
+		//vMatrix[3] = 1;
 	}
 	float getVectorValue(int index)
 	{
