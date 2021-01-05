@@ -132,12 +132,13 @@ vector <point3D> projectYZ(vector <point3D> points)
 
 int main()
 {
-	int i,j,t;
+	int i,j,t, compoIndex = 0;
 	char addchoice, axischoice, space, axisRot;
 	vector <point3D> points;
 	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
 	vector <float> readPoints;
 	vector <int> transChoices;
+	vector <Matrix> forCompo;
 	string indiv, filename, subs, ssubs, outName;
 	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset, normVal;
 	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4], mSque[4][4], mRot[4][4];
@@ -146,11 +147,11 @@ int main()
 	point3D testbary, testout, arbitAxis;
 	point2D test2d;
 	Matrix dist(mDist);
-	Matrix oTrans(moTrans);
+	Matrix oTrans(moTrans), finalCompo(mTrans);
 	Matrix sque(mSque);
 	Matrix rotate(mRot), rot2(mRot);
 	Matrix rotateZarb(mRot);
-	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
+	Matrix zInv(mRot), xInv(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -220,7 +221,8 @@ int main()
 			cin >> yTrans;
 			cout << "Z:";
 			cin >> zTrans;
-			translateMatrix = transf.getTranslateMatrix(xTrans, yTrans, zTrans);
+			forCompo.push_back(transf.getTranslateMatrix(xTrans, yTrans, zTrans));
+			//translateMatrix = transf.getTranslateMatrix(xTrans, yTrans, zTrans);
 			//trans is the translate matrix
 		}
 		if (transChoices[i] == 2) //Scale
@@ -242,10 +244,13 @@ int main()
 				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans);
 				scal = transf.multiplyMatrix(oTrans, scal, false);
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
-				scal = transf.multiplyMatrix(scal, oTrans, false);
+
+				forCompo.push_back(transf.multiplyMatrix(scal, oTrans, false));
+				//scal = transf.multiplyMatrix(scal, oTrans, false);
 			}
 			else
-				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
+				forCompo.push_back(transf.getScaleMatrix(xTrans, yTrans, zTrans));
+				//scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
 		}
 		if (transChoices[i] == 3) //Distort
 		{
@@ -265,10 +270,13 @@ int main()
 				dist = transf.getDistortMatrix(axischoice, dist1, dist2);
 				dist = transf.multiplyMatrix(oTrans, dist, false);
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
-				dist = transf.multiplyMatrix(dist, oTrans, false);
+
+				forCompo.push_back(transf.multiplyMatrix(dist, oTrans, false));
+				//dist = transf.multiplyMatrix(dist, oTrans, false);
 			}
 			else
-				dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
+				forCompo.push_back(transf.getDistortMatrix(axischoice, dist1, dist2));
+				//dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
 		}
 		if (transChoices[i] == 4) //Squeeze
 		{
@@ -320,11 +328,13 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
 
-					rotate = transf.multiplyMatrix(rotate, oTrans, false);
+					forCompo.push_back(transf.multiplyMatrix(rotate, oTrans, false));
+					//rotate = transf.multiplyMatrix(rotate, oTrans, false);
 				}
 				else //if rotation is world space
 				{
-					rotate = transf.getRotateMatrix(radians, axischoice, false);
+					forCompo.push_back(transf.getRotateMatrix(radians, axischoice, false));
+					//rotate = transf.getRotateMatrix(radians, axischoice, false);
 				}
 			}
 			else //arbitrary axis rotation
@@ -387,7 +397,13 @@ int main()
 		}
 	}
 	//compose here after
+	finalCompo.get3DIdentity();
+	for (compoIndex = 0; compoIndex < forCompo.size(); compoIndex++)
+	{
+		finalCompo = transf.multiplyMatrix(finalCompo,forCompo[compoIndex], false);
+	}
 
+	//assign for writing
 	for (i = 0; i < points.size(); i++)
 	{
 		Vector p(points[i].x, points[i].y, points[i].z);
@@ -400,10 +416,9 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 		
-		
 		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
 		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);
-		finalPts = transf.multiplyMatrix(rotate, coordPts, true);
+		finalPts = transf.multiplyMatrix(finalCompo, coordPts, true);
 		
 		//finalCompo = transf.multiplyMatrix(rotate, scal);
 		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
