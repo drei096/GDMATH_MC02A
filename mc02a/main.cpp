@@ -398,9 +398,9 @@ int main()
 	}
 	//compose here after
 	finalCompo.get3DIdentity();
-	for (compoIndex = 0; compoIndex < forCompo.size() ; compoIndex++)
+	for (compoIndex = forCompo.size() - 1; compoIndex >= 0 ; compoIndex--)
 	{
-		finalCompo = transf.multiplyMatrix(finalCompo,forCompo[compoIndex], false);
+		finalCompo = transf.multiplyMatrix(forCompo[compoIndex], finalCompo , false);
 	}
 
 	//assign for writing
@@ -416,7 +416,7 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 
-		finalCompo.displayMatrix();
+		//finalCompo.displayMatrix();
 		
 		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
 		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);

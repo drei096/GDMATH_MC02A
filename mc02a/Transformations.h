@@ -96,6 +96,7 @@ public:
 				//dummyV2.displayVector();
 
 				dprod = transf.dotProd(dummyV, dummyV2);
+				//cout << "dprod:" << dprod << endl;
 				productMatrix.setIndexVal(rowIndex, colIndex, dprod);
 			}
 		}
