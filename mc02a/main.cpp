@@ -240,9 +240,9 @@ int main()
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
 				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans);
-				scal = transf.multiplyMatrix(oTrans, scal);
+				scal = transf.multiplyMatrix(oTrans, scal, false);
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
-				scal = transf.multiplyMatrix(scal, oTrans);
+				scal = transf.multiplyMatrix(scal, oTrans, false);
 			}
 			else
 				scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
@@ -263,9 +263,9 @@ int main()
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
 				dist = transf.getDistortMatrix(axischoice, dist1, dist2);
-				dist = transf.multiplyMatrix(oTrans, dist);
+				dist = transf.multiplyMatrix(oTrans, dist, false);
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
-				dist = transf.multiplyMatrix(dist, oTrans);
+				dist = transf.multiplyMatrix(dist, oTrans, false);
 			}
 			else
 				dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
@@ -311,7 +311,7 @@ int main()
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
 					rotate = transf.getRotateMatrix(radians, axischoice, false);
-					rotate = transf.multiplyMatrix(oTrans, rotate);
+					rotate = transf.multiplyMatrix(oTrans, rotate, false);
 
 					if (axischoice == 'x')
 						oTrans = transf.getTranslateMatrix(abs(testbary.x - axisOffset), testbary.y, testbary.z);
@@ -320,7 +320,7 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
 
-					rotate = transf.multiplyMatrix(rotate, oTrans);
+					rotate = transf.multiplyMatrix(rotate, oTrans, false);
 				}
 				else //if rotation is world space
 				{
@@ -387,27 +387,28 @@ int main()
 		}
 	}
 	//compose here after
+
 	for (i = 0; i < points.size(); i++)
 	{
 		Vector p(points[i].x, points[i].y, points[i].z);
 		Vector dummyV(1, 3, 5);
 		point3D output;
-		/*
 		
+		coordPts.get3DIdentity();
 		coordPts.setIndexVal(0, 0, points[i].x);
 		coordPts.setIndexVal(1, 0, points[i].y);
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
-		point3D output;
-
-		finalPts = transf.multiplyMatrix(translateMatrix, coordPts);
-		*/
+		
+		finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
+		finalPts = transf.multiplyMatrix(rotate, finalPts, false);
+		finalPts = transf.multiplyMatrix(finalPts, coordPts, true);
 		
 		//finalCompo = transf.multiplyMatrix(rotate, scal);
 		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
 		//finalCompo.displayMatrix();
 
-		dummyV = transf.multiplyWithCompo(rotate , p);
+		//dummyV = transf.multiplyWithCompo(rotate , p);
 		/*
 		
 		if (transChoices[0] == 1)
@@ -418,9 +419,9 @@ int main()
 		}
 		*/
 
-		output.x = dummyV.getVectorValue(0);//finalPts.getIndexVal(0, 0);
-		output.y = dummyV.getVectorValue(1);//finalPts.getIndexVal(1, 0);
-		output.z = dummyV.getVectorValue(2);//finalPts.getIndexVal(2, 0);
+		output.x = finalPts.getIndexVal(0, 0);//dummyV.getVectorValue(0); 
+		output.y = finalPts.getIndexVal(1, 0);//dummyV.getVectorValue(1);//
+		output.z = finalPts.getIndexVal(2, 0);//dummyV.getVectorValue(2);//
 		outRot.push_back(output);
 	}
 	

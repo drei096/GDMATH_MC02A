@@ -44,7 +44,7 @@ public:
 		return sum;
 	}
 
-	Matrix multiplyMatrix(Matrix m1, Matrix m2) //multiplies 2 4x4 matrices
+	Matrix multiplyMatrix(Matrix m1, Matrix m2, bool ism2Coord) //multiplies 2 4x4 matrices
 	{
 		Transformations transf;
 		int rowIndex, colIndex, k=0, i, j;
@@ -59,10 +59,42 @@ public:
 			{
 				Vector dummyV(1, 2, 3);
 				Vector dummyV2(2, 3, 4);
-				dummyV = dummyV.getRow(m1, rowIndex);
-				dummyV.setVectorVals(m1.getIndexVal(rowIndex, 3), 3); //HAHAHAHA eto na pala yun yung hahanapin sa 3rd column
+
+				if (rowIndex == 3)
+				{
+					dummyV.setVectorVals(0, 0);
+					dummyV.setVectorVals(0, 1);
+					dummyV.setVectorVals(0, 2);
+					dummyV.setVectorVals(1, 3);
+				}
+				else
+				{
+					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 0), 0);
+					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 1), 1);
+					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 2), 2);
+					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 3), 3);
+				}
+				 //HAHAHAHA eto na pala yun yung hahanapin sa 3rd column
+				
+				cout << "dummy v1:" << endl;
+				dummyV.displayVector();
+
 				dummyV2 = dummyV2.getColumn(m2, colIndex);
-				dummyV2.setVectorVals(m2.getIndexVal(colIndex, 3), 3);
+				if(ism2Coord == true)
+					dummyV2.setVectorVals(1, 3);//m2.getIndexVal(colIndex, 3), 3);
+				else
+				{
+					if(colIndex == 3)
+						dummyV2.setVectorVals(1, 3);
+					else
+					{
+						dummyV2.setVectorVals(0, 3);
+					}
+				}
+
+				cout << "dummy v2:" << endl;
+				dummyV2.displayVector();
+
 				dprod = transf.dotProd(dummyV, dummyV2);
 				productMatrix.setIndexVal(rowIndex, colIndex, dprod);
 			}
@@ -208,7 +240,7 @@ public:
 		Transformations transf;
 		float mat[4][4];
 		Matrix newCompo(mat);
-		newCompo = transf.multiplyMatrix(mc, mt);
+		newCompo = transf.multiplyMatrix(mc, mt, false);
 		return newCompo;
 	}
 	Matrix getRotateArbitrary(float theta, float x, float y, float z)

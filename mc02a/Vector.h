@@ -15,7 +15,7 @@ public:
 	}
 	void forceZero(int rowIndex)
 	{
-		if (rowIndex <= 3)
+		if (rowIndex <= 2)
 			vMatrix[3] = 0;
 		else
 			vMatrix[3] = 1;
@@ -25,7 +25,7 @@ public:
 		int i;
 		for (i = 0; i < 4; i++)
 		{
-			cout << vMatrix[i] << endl;
+			cout << i << ":" << vMatrix[i] << endl;
 		}
 	}
 	Vector getRow(Matrix m, int rowIndex)
@@ -36,10 +36,13 @@ public:
 		z = m.getIndexVal(rowIndex, 2);
 		//a = m.getIndexVal(rowIndex, 3);
 		Vector row(x, y, z);
+		row.setVectorVals(x, 0);
+		row.setVectorVals(y, 1);
+		row.setVectorVals(z, 2);
 		//if(rowIndex < 3)
 			//row.forceZero(rowIndex);
 		//row.setVectorVals(a, 3);
-		row.displayVector();
+		//row.displayVector();
 		return row;
 	}
 	Vector getColumn(Matrix m, int colIndex)
@@ -49,11 +52,14 @@ public:
 		y = m.getIndexVal(1, colIndex);
 		z = m.getIndexVal(2, colIndex);
 		//a = m.getIndexVal(3, colIndex);
-		Vector row(x, y, z);
+		Vector column(x, y, z); 
+		column.setVectorVals(x, 0);
+		column.setVectorVals(y, 1);
+		column.setVectorVals(z, 2);
 		//if(colIndex < 3)
 			//row.forceZero(colIndex);
 		//row.setVectorVals(a, 3);
-		return row;
+		return column;
 	}
 	void setVectorVals(float val, int index)
 	{
