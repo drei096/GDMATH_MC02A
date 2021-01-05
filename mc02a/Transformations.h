@@ -159,8 +159,8 @@ public:
 			{
 				m3.setIndexVal(0, 0, cos(theta));
 				m3.setIndexVal(1, 1, cos(theta));
-				m3.setIndexVal(0, 1, sin(theta));
-				m3.setIndexVal(1, 0, -1 * sin(theta));
+				m3.setIndexVal(0, 1, -1 * sin(theta));
+				m3.setIndexVal(1, 0, sin(theta));
 				m3.setIndexVal(2, 2, 1);
 				return m3;
 			}

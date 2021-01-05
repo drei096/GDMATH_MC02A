@@ -415,6 +415,8 @@ int main()
 		coordPts.setIndexVal(1, 0, points[i].y);
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
+
+		finalCompo.displayMatrix();
 		
 		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
 		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);
