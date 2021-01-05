@@ -196,6 +196,35 @@ public:
 			}
 		}
 	}
+
+	//pacheck nito
+	Matrix getRotateQuaternions(float theta, float x, float y, float z)
+	{
+		float mat[4][4];
+		Matrix iden3d(mat);
+		float normU;
+
+		normU = sqrt((x * x) + (y * y) + (z * z));
+		x = x / normU;
+		y = y / normU;
+		z = z / normU;
+
+		//diagonal
+		iden3d.setIndexVal(0, 0, (cos(theta / 2) * cos(theta / 2)) + ((sin(theta / 2) * x) * (sin(theta / 2) * x)) - ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
+		iden3d.setIndexVal(1, 1, (cos(theta / 2) * cos(theta / 2)) - ((sin(theta / 2) * x) * (sin(theta / 2) * x)) + ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
+		iden3d.setIndexVal(2, 2, (cos(theta / 2) * cos(theta / 2)) - ((sin(theta / 2) * x) * (sin(theta / 2) * x)) - ((sin(theta / 2) * y) * (sin(theta / 2) * y)) + ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
+		//1st row
+		iden3d.setIndexVal(0, 1, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
+		iden3d.setIndexVal(0, 2, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * y)));
+		//2nd row
+		iden3d.setIndexVal(1, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
+		iden3d.setIndexVal(1, 2, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
+		//3rd row
+		iden3d.setIndexVal(2, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
+		iden3d.setIndexVal(2, 1, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
+
+	}
+
 	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3
 	{
 		float mat[4][4];
