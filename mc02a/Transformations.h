@@ -76,8 +76,8 @@ public:
 				}
 				 //HAHAHAHA eto na pala yun yung hahanapin sa 3rd column
 				
-				cout << "dummy v1:" << endl;
-				dummyV.displayVector();
+				//cout << "dummy v1:" << endl;
+				//dummyV.displayVector();
 
 				dummyV2 = dummyV2.getColumn(m2, colIndex);
 				if(ism2Coord == true)
@@ -92,8 +92,8 @@ public:
 					}
 				}
 
-				cout << "dummy v2:" << endl;
-				dummyV2.displayVector();
+				//cout << "dummy v2:" << endl;
+				//dummyV2.displayVector();
 
 				dprod = transf.dotProd(dummyV, dummyV2);
 				productMatrix.setIndexVal(rowIndex, colIndex, dprod);
@@ -223,6 +223,7 @@ public:
 		iden3d.setIndexVal(2, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
 		iden3d.setIndexVal(2, 1, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
 
+		return iden3d;
 	}
 
 	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3

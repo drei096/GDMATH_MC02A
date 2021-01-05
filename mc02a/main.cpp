@@ -148,7 +148,7 @@ int main()
 	Matrix dist(mDist);
 	Matrix oTrans(moTrans);
 	Matrix sque(mSque);
-	Matrix rotate(mRot);
+	Matrix rotate(mRot), rot2(mRot);
 	Matrix rotateZarb(mRot);
 	Matrix zInv(mRot), xInv(mRot), finalCompo(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
 
@@ -337,8 +337,8 @@ int main()
 				cin >> arbitAxis.y;
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
-				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
-				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
+				//normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
+				rotate = transf.getRotateQuaternions(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z);
 				/*
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));
@@ -400,9 +400,10 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 		
-		finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
-		finalPts = transf.multiplyMatrix(rotate, finalPts, false);
-		finalPts = transf.multiplyMatrix(finalPts, coordPts, true);
+		
+		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
+		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);
+		finalPts = transf.multiplyMatrix(rotate, coordPts, true);
 		
 		//finalCompo = transf.multiplyMatrix(rotate, scal);
 		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
