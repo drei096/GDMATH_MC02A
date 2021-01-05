@@ -398,7 +398,7 @@ int main()
 	}
 	//compose here after
 	finalCompo.get3DIdentity();
-	for (compoIndex = 0; compoIndex < forCompo.size(); compoIndex++)
+	for (compoIndex = 0; compoIndex < forCompo.size() ; compoIndex++)
 	{
 		finalCompo = transf.multiplyMatrix(finalCompo,forCompo[compoIndex], false);
 	}
