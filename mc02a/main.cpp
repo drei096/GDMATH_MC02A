@@ -459,10 +459,12 @@ int main()
 
 
 	//write to a file yung final coord values
+	/*
 	cout << "What would you like to name the output file? ";
 	cin >> outName;
 	outName = outName + ".txt";
-	ofstream pointsOut(outName);
+	*/
+	ofstream pointsOut("output.txt");
 	//print here yung results to the txt file
 	for (i = 0; i < points.size(); i++)
 	{
