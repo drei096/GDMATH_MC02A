@@ -260,9 +260,9 @@ public:
 		iden3d.get3DIdentity();
 		iden3d.displayMatrix(); //display
 
-		iden3d.setIndexVal(0, 0, 1.0/sqx * sqrt(sqy) * sqrt(sqz));
-		iden3d.setIndexVal(1, 1, (1.0/sqy)*sqrt(sqx)*sqrt(sqz));
-		iden3d.setIndexVal(2, 2, 1.0/sqz * sqrt(sqx) * sqrt(sqy));
+		iden3d.setIndexVal(0, 0, 1/sqx);
+		iden3d.setIndexVal(1, 1, sqy);
+		iden3d.setIndexVal(2, 2, sqz/sqz);
 		iden3d.displayMatrix(); //display
 		return iden3d;
 	}
@@ -283,14 +283,14 @@ public:
 		
 		iden3d.setIndexVal(0, 0, (x*x) * (1 - cos(theta)) + cos(theta));
 		iden3d.setIndexVal(1, 0, x * y * (1 - cos(theta)) - (z * sin(theta)));
-		iden3d.setIndexVal(2, 0, x * z * (1 - cos(theta)) + (y * sin(theta)));
+		iden3d.setIndexVal(2, 0, -1 * (x * z * (1 - cos(theta)) + (y * sin(theta))));
 
 		iden3d.setIndexVal(0, 1, x * y * (1 - cos(theta)) + (z * sin(theta)));
 		iden3d.setIndexVal(1, 1, (y*y) * (1 - cos(theta)) + cos(theta));
-		iden3d.setIndexVal(2, 1, y * z * (1 - cos(theta)) - (x * sin(theta)));
+		iden3d.setIndexVal(2, 1, -1 * (y * z * (1 - cos(theta)) - (x * sin(theta))));
 
-		iden3d.setIndexVal(0, 2, z * x * (1 - cos(theta)) - (y * sin(theta)));
-		iden3d.setIndexVal(1, 2, z * y * (1 - cos(theta)) + (x * sin(theta)));
+		iden3d.setIndexVal(0, 2, -1 * (z * x * (1 - cos(theta)) - (y * sin(theta))));
+		iden3d.setIndexVal(1, 2, -1 * (z * y * (1 - cos(theta)) + (x * sin(theta))));
 		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
 		return iden3d;
 		
@@ -298,6 +298,40 @@ public:
 	float normalize(float px, float py, float pz)
 	{
 		return sqrt((px * px) + (py * py) + (pz * pz));
+	}
+	Matrix project(int choice)
+	{
+		float m1[4][4] = {
+		{1.0,0.0,0.0,0.0},
+		{0.0,1.0,0.0,0.0},
+		{0.0,0.0,0.0,1.0},
+		{0.0,0.0,0.0,0.0}
+		};
+
+		float m2[4][4] = {
+		{1,0,0,0},
+		{0,0,0,0},
+		{0,0,1,0},
+		{0,0,0,1}
+		};
+
+		float m3[4][4] = {
+		{0,0,0,0},
+		{0,1,0,0},
+		{0,0,1,0},
+		{0,0,0,1}
+		};
+
+		Matrix projectXY(m1);
+		Matrix projectXZ(m2);
+		Matrix projectYZ(m3);
+
+		if (choice == 1)
+			return projectXY;
+		if (choice == 2)
+			return projectXZ;
+		if (choice == 3)
+			return projectYZ;
 	}
 };
 

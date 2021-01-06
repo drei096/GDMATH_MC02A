@@ -132,7 +132,7 @@ vector <point3D> projectYZ(vector <point3D> points)
 
 int main()
 {
-	int i,j,t, compoIndex = 0;
+	int i,j,t, compoIndex = 0, projectChoice;
 	char addchoice, axischoice, space, axisRot;
 	vector <point3D> points;
 	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
@@ -287,12 +287,19 @@ int main()
 			cin >> ySq;
 			cout << "Z:";
 			cin >> zSq;
-			sque = transf.getSqueezeMatrix(xSq, ySq, zSq); //sque is the squeeze matrix
+			forCompo.push_back(transf.getSqueezeMatrix(xSq, ySq, zSq));
+			//sque is the squeeze matrix
 		}
 		if (transChoices[i] == 5) //project
 		{
-			willProject = true;
-			continue;
+			cout << "What plane do you want to project to?" << endl;
+			cout << "[1] XY Plane" << endl;
+			cout << "[2] XZ Plane" << endl;
+			cout << "[3] YZ Plane" << endl;
+			cout << "Choice: ";
+			cin >> projectChoice;
+			forCompo.push_back(transf.project(projectChoice));
+			//willProject = true;
 		}
 		if (transChoices[i] == 6) //rotate
 		{
@@ -347,8 +354,9 @@ int main()
 				cin >> arbitAxis.y;
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
-				//normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
-				rotate = transf.getRotateQuaternions(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z);
+				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
+				//forCompo.push_back(transf.getRotateQuaternions(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z));
+				forCompo.push_back(transf.getRotateArbitrary(radians, arbitAxis.x / normVal, arbitAxis.y / normVal, arbitAxis.z / normVal));
 				/*
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));
@@ -416,7 +424,7 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 
-		//finalCompo.displayMatrix();
+		finalCompo.displayMatrix();
 		
 		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
 		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);
