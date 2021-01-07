@@ -330,8 +330,12 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
+					if (axischoice == 'x')
+						rotate = transf.getRotateQuaternions(radians, 1, 0, 0);
 					if(axischoice == 'y')
 						rotate = transf.getRotateQuaternions(radians, 0, 1, 0);
+					if (axischoice == 'z')
+						rotate = transf.getRotateQuaternions(radians, 0, 0, 1);
 					//rotate = transf.getRotateMatrix(radians, axischoice, false);
 					rotate = transf.multiplyMatrix(oTrans, rotate, false);
 
@@ -347,7 +351,12 @@ int main()
 				}
 				else //if rotation is world space
 				{
-					forCompo.push_back(transf.getRotateMatrix(radians, axischoice, false));
+					if (axischoice == 'x')
+						forCompo.push_back(transf.getRotateQuaternions(radians, 1, 0, 0));
+					if (axischoice == 'y')
+						forCompo.push_back(transf.getRotateQuaternions(radians, 0, 1, 0));
+					if (axischoice == 'z')
+						forCompo.push_back(transf.getRotateQuaternions(radians, 0, 0, 1));
 					//rotate = transf.getRotateMatrix(radians, axischoice, false);
 				}
 			}
