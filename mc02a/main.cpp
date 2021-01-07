@@ -4,6 +4,7 @@
 * pwede mo paglaruan yung test calls para makuha mo feel ng fxns
 */
 
+
 #include<iostream>
 #include<iomanip>
 #include<cmath>
@@ -16,7 +17,8 @@
 #include"Matrix.h"
 #include"Vector.h"
 #include"Transformations.h"
-#include"Vector2D.h"
+#include"Quaternion.h"
+
 using namespace std;
 
 typedef struct point3D
@@ -52,6 +54,7 @@ point3D computeBarycenter(vector <point3D> points)
 	return barycenter;
 }
 
+/*
 vector <point3D> projectXY(vector <point3D> points)
 {
 	int i;
@@ -129,6 +132,7 @@ vector <point3D> projectYZ(vector <point3D> points)
 	}
 	return projPoints;
 }
+*/
 
 int main()
 {
@@ -152,6 +156,7 @@ int main()
 	Matrix rotate(mRot), rot2(mRot);
 	Matrix rotateZarb(mRot);
 	Matrix zInv(mRot), xInv(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
+	Quaternion quat;
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -325,7 +330,9 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
-					rotate = transf.getRotateMatrix(radians, axischoice, false);
+					if(axischoice == 'y')
+						rotate = transf.getRotateQuaternions(radians, 0, 1, 0);
+					//rotate = transf.getRotateMatrix(radians, axischoice, false);
 					rotate = transf.multiplyMatrix(oTrans, rotate, false);
 
 					if (axischoice == 'x')
@@ -354,9 +361,12 @@ int main()
 				cin >> arbitAxis.y;
 				cout << "Vector Axis Z: ";
 				cin >> arbitAxis.z;
-				normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
+
+				forCompo.push_back(transf.getRotateQuaternions(radians,arbitAxis.x, arbitAxis.y, arbitAxis.z));
+
+				//normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
 				//forCompo.push_back(transf.getRotateQuaternions(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z));
-				forCompo.push_back(transf.getRotateArbitrary(radians, arbitAxis.x / normVal, arbitAxis.y / normVal, arbitAxis.z / normVal));
+				//forCompo.push_back(transf.getRotateArbitrary(radians, arbitAxis.x / normVal, arbitAxis.y / normVal, arbitAxis.z / normVal));
 				/*
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));

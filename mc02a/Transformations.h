@@ -201,15 +201,66 @@ public:
 	//pacheck nito
 	Matrix getRotateQuaternions(float theta, float x, float y, float z)
 	{
-		float mat[4][4];
+		float mat[4][4], normU, qx,qy,qz,qw;
 		Matrix iden3d(mat);
-		float normU;
+		
+		iden3d.get3DIdentity();
 
+		//normalizing axis vector
 		normU = sqrt((x * x) + (y * y) + (z * z));
-		x = x / normU;
-		y = y / normU;
-		z = z / normU;
+		qx = x / normU;
+		qy = y / normU;
+		qz = z / normU;
 
+		//quaternion q setup
+		//quat.setQuaternion(cosf(theta / 2), x * sinf(theta / 2), y * sinf(theta / 2), z * sinf(theta / 2));
+		qw = cos(theta / 2);
+		qx = qx * sin(theta / 2);
+		qy = qy * sin(theta / 2);
+		qz = qz * sin(theta / 2);
+		
+		//set the rotation matrix
+
+		iden3d.setIndexVal(0, 0, (qw*qw) + (qx*qx) - (qy*qy) - (qz*qz));
+		iden3d.setIndexVal(0, 1, (2 * qx * qy) - (2 * qw * qz));
+		iden3d.setIndexVal(0, 2, (2 * qx * qz) + (2 * qw * qy));
+		iden3d.setIndexVal(0, 3, 0);
+
+		iden3d.setIndexVal(1, 0, (2 * qx * qy) + (2 * qw * qz));
+		iden3d.setIndexVal(1, 1, (qw * qw) - (qx * qx) + (qy * qy) - (qz * qz));
+		iden3d.setIndexVal(1, 2, (2 * qy * qz) - (2 * qw * qx));
+		iden3d.setIndexVal(1, 3, 0);
+
+		iden3d.setIndexVal(2, 0, (2 * qx * qz) - (2 * qw * qy));
+		iden3d.setIndexVal(2, 1, (2 * qy * qz) + (2 * qw * qx));
+		iden3d.setIndexVal(2, 2, (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
+		iden3d.setIndexVal(2, 3, 0);
+
+		/*
+		qx = quat.getQuaternionValue('x');
+		qy = quat.getQuaternionValue('y');
+		qz = quat.getQuaternionValue('z');
+		qw = quat.getQuaternionValue('w');
+		*/
+
+		/*
+		iden3d.setIndexVal(0, 0, 1 - (2 * (qy * qy)) - (2 * (qz * qz)));
+		iden3d.setIndexVal(0, 1, (2*qx*qy) - (2*qw*qz));
+		iden3d.setIndexVal(0, 2, (2 * qx * qz) - (2 * qw * qy));
+		iden3d.setIndexVal(0, 3, 0);
+
+		iden3d.setIndexVal(1, 0, (2 * qx * qy) + (2 * qw * qz));
+		iden3d.setIndexVal(1, 1, 1 - (2 * (qx * qx)) - (2 * (qz * qz)));
+		iden3d.setIndexVal(1, 2, (2 * qy * qz) - (2 * qw * qz));
+		iden3d.setIndexVal(1, 3, 0);
+
+		iden3d.setIndexVal(2, 0, (2 * qx * qz) - (2 * qw * qy));
+		iden3d.setIndexVal(2, 1, (2 * qy * qz) + (2 * qw * qx));
+		iden3d.setIndexVal(2, 2, 1 - (2 * (qx * qx)) - (2 * (qy * qy)));
+		iden3d.setIndexVal(2, 3, 0);
+		*/
+
+		/*
 		//diagonal
 		iden3d.setIndexVal(0, 0, (cos(theta / 2) * cos(theta / 2)) + ((sin(theta / 2) * x) * (sin(theta / 2) * x)) - ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
 		iden3d.setIndexVal(1, 1, (cos(theta / 2) * cos(theta / 2)) - ((sin(theta / 2) * x) * (sin(theta / 2) * x)) + ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
@@ -223,6 +274,7 @@ public:
 		//3rd row
 		iden3d.setIndexVal(2, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
 		iden3d.setIndexVal(2, 1, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
+		*/
 
 		return iden3d;
 	}
@@ -294,10 +346,6 @@ public:
 		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
 		return iden3d;
 		
-	}
-	float normalize(float px, float py, float pz)
-	{
-		return sqrt((px * px) + (py * py) + (pz * pz));
 	}
 	Matrix project(int choice)
 	{
