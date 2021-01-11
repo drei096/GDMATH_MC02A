@@ -140,11 +140,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Quaternion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Matrix.h" />
-    <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Transformations.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>

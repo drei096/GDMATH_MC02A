@@ -4,7 +4,6 @@
 * pwede mo paglaruan yung test calls para makuha mo feel ng fxns
 */
 
-
 #include<iostream>
 #include<iomanip>
 #include<cmath>
@@ -17,7 +16,6 @@
 #include"Matrix.h"
 #include"Vector.h"
 #include"Transformations.h"
-#include"Quaternion.h"
 
 using namespace std;
 
@@ -54,109 +52,26 @@ point3D computeBarycenter(vector <point3D> points)
 	return barycenter;
 }
 
-/*
-vector <point3D> projectXY(vector <point3D> points)
-{
-	int i;
-	vector <point3D> projPoints;
-	point3D temp;
-	Transformations tran;
-	Vector resultant(1, 2, 3);
-	float mat[4][4] = {
-		{1.0,0.0,0.0,0.0},
-		{0.0,1.0,0.0,0.0},
-		{0.0,0.0,0.0,1.0},
-		{0.0,0.0,0.0,0.0}
-	};
-	Matrix projectMat(mat);
-	for (i = 0; i < points.size(); i++)
-	{
-		Vector dummyPoint(points[i].x, points[i].y, points[i].z);
-		resultant = tran.multiplyWithCompo(projectMat, dummyPoint);
-		temp.x = resultant.getVectorValue(0);
-		temp.y = resultant.getVectorValue(1);
-		temp.z = resultant.getVectorValue(2);
-		projPoints.push_back(temp);
-	}
-	return projPoints;
-}
 
-vector <point3D> projectXZ(vector <point3D> points)
-{
-	int i;
-	vector <point3D> projPoints;
-	point3D temp;
-	Transformations tran;
-	Vector resultant(1, 2, 3);
-	float mat[4][4] = {
-		{1,0,0,0},
-		{0,0,0,0},
-		{0,0,1,0},
-		{0,0,0,1}
-	};
-	Matrix projectMat(mat);
-	for (i = 0; i < points.size(); i++)
-	{
-		Vector dummyPoint(points[i].x, points[i].y, points[i].z);
-		resultant = tran.multiplyWithCompo(projectMat, dummyPoint);
-		temp.x = resultant.getVectorValue(0);
-		temp.y = resultant.getVectorValue(1);
-		temp.z = resultant.getVectorValue(2);
-		projPoints.push_back(temp);
-	}
-	return projPoints;
-}
-
-vector <point3D> projectYZ(vector <point3D> points)
-{
-	int i;
-	vector <point3D> projPoints;
-	point3D temp;
-	Transformations tran;
-	Vector resultant(1, 2, 3);
-	float mat[4][4] = {
-		{0,0,0,0},
-		{0,1,0,0},
-		{0,0,1,0},
-		{0,0,0,1}
-	};
-	Matrix projectMat(mat);
-	for (i = 0; i < points.size(); i++)
-	{
-		Vector dummyPoint(points[i].x, points[i].y, points[i].z);
-		resultant = tran.multiplyWithCompo(projectMat, dummyPoint);
-		temp.x = resultant.getVectorValue(0);
-		temp.y = resultant.getVectorValue(1);
-		temp.z = resultant.getVectorValue(2);
-		projPoints.push_back(temp);
-	}
-	return projPoints;
-}
-*/
 
 int main()
 {
 	int i,j,t, compoIndex = 0, projectChoice;
 	char addchoice, axischoice, space, axisRot;
 	vector <point3D> points;
-	vector <point3D> outputXYProj, outputXZProj, outputYZProj, outDist, outRot;
+	vector <point3D> outRot;
 	vector <float> readPoints;
 	vector <int> transChoices;
 	vector <Matrix> forCompo;
 	string indiv, filename, subs, ssubs, outName;
 	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset, normVal;
-	float mDist[4][4], moTrans[4][4], mScal[4][4], mTrans[4][4], mSque[4][4], mRot[4][4];
-	bool choice, willProject = false, isInverse = false;
+	float mStruct[4][4];
+	bool choice, isInverse = false, isSpherical = false;
 	Transformations transf;
 	point3D testbary, testout, arbitAxis;
 	point2D test2d;
-	Matrix dist(mDist);
-	Matrix oTrans(moTrans), finalCompo(mTrans);
-	Matrix sque(mSque);
-	Matrix rotate(mRot), rot2(mRot);
-	Matrix rotateZarb(mRot);
-	Matrix zInv(mRot), xInv(mRot), scal(mScal), translateMatrix(mTrans), coordPts(mTrans), finalPts(mTrans);
-	Quaternion quat;
+	Matrix dist(mStruct), oTrans(mStruct), finalCompo(mStruct), sque(mStruct), rotate(mStruct);
+	Matrix scal(mStruct), translateMatrix(mStruct), coordPts(mStruct), finalPts(mStruct);
 
 	cout << "What file would you like to open? ";
 	cin >> filename;
@@ -171,12 +86,14 @@ int main()
 		{
 			i = 0;
 			getline(ss, subs, ','); //prints a new line after the comma
+			if (subs[i] == 's')
+				isSpherical = true;
 			while (!isdigit(subs[i]) && subs[i] != '-')
 			{
 				i++;
 			}
 			ssubs = subs.substr(i, '\n');
-			conv = stof(ssubs);
+			conv = stof(ssubs); 
 			cout << conv << endl;
 			readPoints.push_back(conv);
 		}
@@ -186,9 +103,18 @@ int main()
 	for (size_t i = 0; i < readPoints.size(); i+=3)
 	{
 		point3D pt;
-		pt.x = readPoints[i];
-		pt.y = readPoints[i + 1];
-		pt.z = readPoints[i + 2];
+		if (isSpherical == true)
+		{
+			pt.x = readPoints[i] * sin(readPoints[i+1]) * cos(readPoints[i + 2]);
+			pt.y = readPoints[i] * sin(readPoints[i + 1]) * sin(readPoints[i + 2]);
+			pt.z = readPoints[i] * cos(readPoints[i + 1]);
+		}
+		else
+		{
+			pt.x = readPoints[i];
+			pt.y = readPoints[i + 1];
+			pt.z = readPoints[i + 2];
+		}
 		points.push_back(pt);
 	}
 	//end
@@ -210,16 +136,13 @@ int main()
 			choice = false;
 	}
 	
-	//transf.getScaleMatrix(2, 3, 2); // creates and displays a scale matrix that scales 2 in x, 3 in y, 2 in z
-	//transf.getTranslateMatrix(5, 3, 5); // creates and displays a trans matrix that moves 5 in x, 3 in y, 5 in z
-	
-
 	//perform transformations, return matrices
 	for (i = 0; i < transChoices.size(); i++)
 	{
 		if (transChoices[i] == 1) //Translate
 		{
-			cout << endl << "How much in x,y,z do you want to translate?" << endl;
+			cout << "=================" << endl << "TRANSLATION" << endl << "=================" << endl;
+			cout << "How much in x,y,z do you want to translate?" << endl;
 			cout << "X:";
 			cin >> xTrans;
 			cout << "Y:";
@@ -227,13 +150,13 @@ int main()
 			cout << "Z:";
 			cin >> zTrans;
 			forCompo.push_back(transf.getTranslateMatrix(xTrans, yTrans, zTrans));
-			//translateMatrix = transf.getTranslateMatrix(xTrans, yTrans, zTrans);
-			//trans is the translate matrix
+			//trans is the translate matrix pushed to the forCompo list
 		}
 		if (transChoices[i] == 2) //Scale
 		{
-			Matrix oTrans(moTrans);
-			cout << endl << "World space (w) or Object Space (o)? ";
+			Matrix oTrans(mStruct);
+			cout << "=================" << endl << "SCALING" << endl << "=================" << endl;
+			cout << "World space (w) or Object Space (o)? ";
 			cin >> space;
 			cout << endl << "How much in x,y,z do you want to scale?" << endl;
 			cout << "X:";
@@ -251,20 +174,20 @@ int main()
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
 
 				forCompo.push_back(transf.multiplyMatrix(scal, oTrans, false));
-				//scal = transf.multiplyMatrix(scal, oTrans, false);
+				//scal is the scale matrix, pushed to the forcompo list
 			}
 			else
 				forCompo.push_back(transf.getScaleMatrix(xTrans, yTrans, zTrans));
-				//scal = transf.getScaleMatrix(xTrans, yTrans, zTrans); //scal is the scale matrix
 		}
 		if (transChoices[i] == 3) //Distort
 		{
-			cout << endl << "World space (w) or Object Space (o)? ";
+			cout << "=================" << endl << "DISTORTION" << endl << "=================" << endl;
+			cout << "World space (w) or Object Space (o)? ";
 			cin >> space;
 			cout << endl << "In what axis do you want to distort?" << endl;
 			cin >> axischoice;
 			cout << "How much?" << endl;
-			cout << "Amount 1 (xy/yx/zx): ";
+			cout << "Amount 1 (xy/yx/zx): ";  //distort on the indicated planes, based on the reference book
 			cin >> dist1;
 			cout << "Amount 2 (xz/yz/zy): ";
 			cin >> dist2;
@@ -277,15 +200,14 @@ int main()
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
 
 				forCompo.push_back(transf.multiplyMatrix(dist, oTrans, false));
-				//dist = transf.multiplyMatrix(dist, oTrans, false);
 			}
 			else
 				forCompo.push_back(transf.getDistortMatrix(axischoice, dist1, dist2));
-				//dist = transf.getDistortMatrix(axischoice, dist1, dist2); //dist is the distort matrix
 		}
 		if (transChoices[i] == 4) //Squeeze
 		{
-			cout << endl << "How much in x,y,z do you want to squeeze?" << endl;
+			cout << "=================" << endl << "SQUEEZE" << endl << "=================" << endl;
+			cout << "How much in x,y,z do you want to squeeze?" << endl;
 			cout << "X:";
 			cin >> xSq;
 			cout << "Y:";
@@ -295,8 +217,9 @@ int main()
 			forCompo.push_back(transf.getSqueezeMatrix(xSq, ySq, zSq));
 			//sque is the squeeze matrix
 		}
-		if (transChoices[i] == 5) //project
+		if (transChoices[i] == 5) //Project
 		{
+			cout << "=================" << endl << "PROJECTION" << endl << "=================" << endl;
 			cout << "What plane do you want to project to?" << endl;
 			cout << "[1] XY Plane" << endl;
 			cout << "[2] XZ Plane" << endl;
@@ -304,10 +227,10 @@ int main()
 			cout << "Choice: ";
 			cin >> projectChoice;
 			forCompo.push_back(transf.project(projectChoice));
-			//willProject = true;
 		}
-		if (transChoices[i] == 6) //rotate
+		if (transChoices[i] == 6) //Rotate
 		{
+			cout << "=================" << endl << "ROTATION" << endl << "=================" << endl;
 			cout << "World space (w) or object space (o)?: ";
 			cin >> space;
 			cout << "Axis rotation (a) or Arbitrary Axis Rotation (r)? :";
@@ -443,7 +366,7 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 
-		finalCompo.displayMatrix();
+		//finalCompo.displayMatrix();
 		
 		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
 		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);

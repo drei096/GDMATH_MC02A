@@ -12,12 +12,11 @@ public:
 		float mat[4][4];
 		Matrix iden3d(mat);
 		iden3d.get3DIdentity();
-		//iden3d.displayMatrix(); //display
 
 		iden3d.setIndexVal(0, 3, x);
 		iden3d.setIndexVal(1, 3, y);
 		iden3d.setIndexVal(2, 3, z);
-		//iden3d.displayMatrix(); //display
+		
 		return iden3d;
 	}
 	Matrix getScaleMatrix(float sx, float sy, float sz)
@@ -25,12 +24,12 @@ public:
 		float mat[4][4];
 		Matrix iden3d(mat);
 		iden3d.get3DIdentity();
-		iden3d.displayMatrix(); //display
+		
 
 		iden3d.setIndexVal(0, 0, sx);
 		iden3d.setIndexVal(1, 1, sy);
 		iden3d.setIndexVal(2, 2, sz);
-		iden3d.displayMatrix(); //display
+		
 		return iden3d;
 	}
 	float dotProd(Vector v1, Vector v2)
@@ -74,14 +73,13 @@ public:
 					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 2), 2);
 					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 3), 3);
 				}
-				 //HAHAHAHA eto na pala yun yung hahanapin sa 3rd column
 				
 				//cout << "dummy v1:" << endl;
 				//dummyV.displayVector();
 
 				dummyV2 = dummyV2.getColumn(m2, colIndex);
 				if(ism2Coord == true)
-					dummyV2.setVectorVals(1, 3);//m2.getIndexVal(colIndex, 3), 3);
+					dummyV2.setVectorVals(1, 3);
 				else
 				{
 					if(colIndex == 3)
@@ -104,25 +102,7 @@ public:
 		//productMatrix.displayMatrix();
 		return productMatrix;
 	}
-	Vector multiplyWithCompo(Matrix c, Vector p)
-	{
-		Transformations transf;
-		int rowIndex;
-		float dprod;
-		Vector productVector(1,2,3);
-		
-		for (rowIndex = 0; rowIndex < 4; rowIndex++)
-		{
-			Vector dummyV(1, 2, 3);
-			dummyV = dummyV.getRow(c, rowIndex);
-			
-			dprod = transf.dotProd(dummyV, p);
-			productVector.setVectorVals(dprod, rowIndex);
-		}
-		//cout << endl;
-		//productVector.displayVector();
-		return productVector;
-	}
+	
 	Matrix getRotateMatrix(float theta, char axis, bool isInverse) //c counterclockwise, l clockwise
 	{
 		int i, j;
@@ -198,7 +178,6 @@ public:
 		}
 	}
 
-	//pacheck nito
 	Matrix getRotateQuaternions(float theta, float x, float y, float z)
 	{
 		float mat[4][4], normU, qx,qy,qz,qw;
@@ -213,7 +192,6 @@ public:
 		qz = z / normU;
 
 		//quaternion q setup
-		//quat.setQuaternion(cosf(theta / 2), x * sinf(theta / 2), y * sinf(theta / 2), z * sinf(theta / 2));
 		qw = cos(theta / 2);
 		qx = qx * sin(theta / 2);
 		qy = qy * sin(theta / 2);
@@ -235,46 +213,6 @@ public:
 		iden3d.setIndexVal(2, 1, (2 * qy * qz) + (2 * qw * qx));
 		iden3d.setIndexVal(2, 2, (qw * qw) - (qx * qx) - (qy * qy) + (qz * qz));
 		iden3d.setIndexVal(2, 3, 0);
-
-		/*
-		qx = quat.getQuaternionValue('x');
-		qy = quat.getQuaternionValue('y');
-		qz = quat.getQuaternionValue('z');
-		qw = quat.getQuaternionValue('w');
-		*/
-
-		/*
-		iden3d.setIndexVal(0, 0, 1 - (2 * (qy * qy)) - (2 * (qz * qz)));
-		iden3d.setIndexVal(0, 1, (2*qx*qy) - (2*qw*qz));
-		iden3d.setIndexVal(0, 2, (2 * qx * qz) - (2 * qw * qy));
-		iden3d.setIndexVal(0, 3, 0);
-
-		iden3d.setIndexVal(1, 0, (2 * qx * qy) + (2 * qw * qz));
-		iden3d.setIndexVal(1, 1, 1 - (2 * (qx * qx)) - (2 * (qz * qz)));
-		iden3d.setIndexVal(1, 2, (2 * qy * qz) - (2 * qw * qz));
-		iden3d.setIndexVal(1, 3, 0);
-
-		iden3d.setIndexVal(2, 0, (2 * qx * qz) - (2 * qw * qy));
-		iden3d.setIndexVal(2, 1, (2 * qy * qz) + (2 * qw * qx));
-		iden3d.setIndexVal(2, 2, 1 - (2 * (qx * qx)) - (2 * (qy * qy)));
-		iden3d.setIndexVal(2, 3, 0);
-		*/
-
-		/*
-		//diagonal
-		iden3d.setIndexVal(0, 0, (cos(theta / 2) * cos(theta / 2)) + ((sin(theta / 2) * x) * (sin(theta / 2) * x)) - ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
-		iden3d.setIndexVal(1, 1, (cos(theta / 2) * cos(theta / 2)) - ((sin(theta / 2) * x) * (sin(theta / 2) * x)) + ((sin(theta / 2) * y) * (sin(theta / 2) * y)) - ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
-		iden3d.setIndexVal(2, 2, (cos(theta / 2) * cos(theta / 2)) - ((sin(theta / 2) * x) * (sin(theta / 2) * x)) - ((sin(theta / 2) * y) * (sin(theta / 2) * y)) + ((sin(theta / 2) * z) * (sin(theta / 2) * z)));
-		//1st row
-		iden3d.setIndexVal(0, 1, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
-		iden3d.setIndexVal(0, 2, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * y)));
-		//2nd row
-		iden3d.setIndexVal(1, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
-		iden3d.setIndexVal(1, 2, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
-		//3rd row
-		iden3d.setIndexVal(2, 0, (2 * (sin(theta / 2) * x) * (sin(theta / 2) * y)) - (2 * (cos(theta / 2)) * (sin(theta / 2) * z)));
-		iden3d.setIndexVal(2, 1, (2 * (sin(theta / 2) * y) * (sin(theta / 2) * z)) + (2 * (cos(theta / 2)) * (sin(theta / 2) * x)));
-		*/
 
 		return iden3d;
 	}
@@ -318,14 +256,7 @@ public:
 		iden3d.displayMatrix(); //display
 		return iden3d;
 	}
-	Matrix composeTransform(Matrix mc, Matrix mt)
-	{
-		Transformations transf;
-		float mat[4][4];
-		Matrix newCompo(mat);
-		newCompo = transf.multiplyMatrix(mc, mt, false);
-		return newCompo;
-	}
+	
 	Matrix getRotateArbitrary(float theta, float x, float y, float z)
 	{
 		float mat[4][4];
