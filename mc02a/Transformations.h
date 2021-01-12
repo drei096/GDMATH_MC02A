@@ -73,9 +73,6 @@ public:
 					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 2), 2);
 					dummyV.setVectorVals(m1.getIndexVal(rowIndex, 3), 3);
 				}
-				
-				//cout << "dummy v1:" << endl;
-				//dummyV.displayVector();
 
 				dummyV2 = dummyV2.getColumn(m2, colIndex);
 				if(ism2Coord == true)
@@ -90,92 +87,11 @@ public:
 					}
 				}
 
-				//cout << "dummy v2:" << endl;
-				//dummyV2.displayVector();
-
 				dprod = transf.dotProd(dummyV, dummyV2);
-				//cout << "dprod:" << dprod << endl;
 				productMatrix.setIndexVal(rowIndex, colIndex, dprod);
 			}
 		}
-		//cout << endl;
-		//productMatrix.displayMatrix();
 		return productMatrix;
-	}
-	
-	Matrix getRotateMatrix(float theta, char axis, bool isInverse) //c counterclockwise, l clockwise
-	{
-		int i, j;
-		float mat[4][4];
-		Matrix iden3d(mat);
-		Matrix m1(mat);
-		Matrix m2(mat);
-		Matrix m3(mat);
-		m1.get3DIdentity();
-		m2.get3DIdentity();
-		m3.get3DIdentity();
-
-		//EULER ANGLES
-		if (isInverse == false)
-		{
-			if (axis == 'x')
-			{
-				m1.setIndexVal(0, 0, 1);
-				m1.setIndexVal(1, 1, cos(theta));
-				m1.setIndexVal(2, 2, cos(theta));
-				m1.setIndexVal(1, 2, sin(theta));
-				m1.setIndexVal(2, 1, -1 * sin(theta));
-				return m1;
-			}
-			if (axis == 'y')
-			{
-				m2.setIndexVal(1, 1, 1);
-				m2.setIndexVal(0, 0, cos(theta));
-				m2.setIndexVal(2, 2, cos(theta));
-				m2.setIndexVal(2, 0, -1 * sin(theta));
-				m2.setIndexVal(0, 2, sin(theta));
-				return m2;
-			}
-			if (axis == 'z')
-			{
-				m3.setIndexVal(0, 0, cos(theta));
-				m3.setIndexVal(1, 1, cos(theta));
-				m3.setIndexVal(0, 1, -1 * sin(theta));
-				m3.setIndexVal(1, 0, sin(theta));
-				m3.setIndexVal(2, 2, 1);
-				return m3;
-			}
-		}
-		else
-		{
-			if (axis == 'x')
-			{
-				m1.setIndexVal(0, 0, 1);
-				m1.setIndexVal(1, 1, cos(theta));
-				m1.setIndexVal(2, 2, cos(theta));
-				m1.setIndexVal(1, 2, -1 * sin(theta));
-				m1.setIndexVal(2, 1,  sin(theta));
-				return m1;
-			}
-			if (axis == 'y')
-			{
-				m2.setIndexVal(1, 1, 1);
-				m2.setIndexVal(0, 0, cos(theta));
-				m2.setIndexVal(2, 2, cos(theta));
-				m2.setIndexVal(2, 0, -1 * sin(theta));
-				m2.setIndexVal(0, 2, sin(theta));
-				return m2;
-			}
-			if (axis == 'z')
-			{
-				m3.setIndexVal(0, 0, cos(theta));
-				m3.setIndexVal(1, 1, cos(theta));
-				m3.setIndexVal(0, 1, -1 * sin(theta));
-				m3.setIndexVal(1, 0, sin(theta));
-				m3.setIndexVal(2, 2, 1);
-				return m3;
-			}
-		}
 	}
 
 	Matrix getRotateQuaternions(float theta, float x, float y, float z)
@@ -257,27 +173,6 @@ public:
 		return iden3d;
 	}
 	
-	Matrix getRotateArbitrary(float theta, float x, float y, float z)
-	{
-		float mat[4][4];
-		Matrix iden3d(mat);
-		iden3d.get3DIdentity();
-
-		
-		iden3d.setIndexVal(0, 0, (x*x) * (1 - cos(theta)) + cos(theta));
-		iden3d.setIndexVal(1, 0, x * y * (1 - cos(theta)) - (z * sin(theta)));
-		iden3d.setIndexVal(2, 0, -1 * (x * z * (1 - cos(theta)) + (y * sin(theta))));
-
-		iden3d.setIndexVal(0, 1, x * y * (1 - cos(theta)) + (z * sin(theta)));
-		iden3d.setIndexVal(1, 1, (y*y) * (1 - cos(theta)) + cos(theta));
-		iden3d.setIndexVal(2, 1, -1 * (y * z * (1 - cos(theta)) - (x * sin(theta))));
-
-		iden3d.setIndexVal(0, 2, -1 * (z * x * (1 - cos(theta)) - (y * sin(theta))));
-		iden3d.setIndexVal(1, 2, -1 * (z * y * (1 - cos(theta)) + (x * sin(theta))));
-		iden3d.setIndexVal(2, 2, (z*z) * (1 - cos(theta)) + cos(theta));
-		return iden3d;
-		
-	}
 	Matrix project(int choice)
 	{
 		float m1[4][4] = {

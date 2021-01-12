@@ -26,12 +26,6 @@ typedef struct point3D
 	float z;
 };
 
-typedef struct point2D
-{
-	float x;
-	float y;
-};
-
 point3D computeBarycenter(vector <point3D> points)
 {
 	int i;
@@ -52,8 +46,6 @@ point3D computeBarycenter(vector <point3D> points)
 	return barycenter;
 }
 
-
-
 int main()
 {
 	int i,j,t, compoIndex = 0, projectChoice;
@@ -63,13 +55,12 @@ int main()
 	vector <float> readPoints;
 	vector <int> transChoices;
 	vector <Matrix> forCompo;
-	string indiv, filename, subs, ssubs, outName;
+	string indiv, filename, subs, ssubs;
 	float conv, xTrans, yTrans, zTrans, dist1, dist2, xSq, ySq, zSq, radians, axisOffset, normVal;
 	float mStruct[4][4];
 	bool choice, isInverse = false, isSpherical = false;
 	Transformations transf;
-	point3D testbary, testout, arbitAxis;
-	point2D test2d;
+	point3D testbary, arbitAxis;
 	Matrix dist(mStruct), oTrans(mStruct), finalCompo(mStruct), sque(mStruct), rotate(mStruct);
 	Matrix scal(mStruct), translateMatrix(mStruct), coordPts(mStruct), finalPts(mStruct);
 
@@ -77,6 +68,12 @@ int main()
 	cin >> filename;
 	filename = filename + ".txt";
 	ifstream setOfPoints(filename);
+	if (setOfPoints.fail())
+	{
+		cout << endl << "ERROR: FILE NOT FOUND. TERMINATING." << endl;
+		return 0; 
+	}
+
 	
 	//read coordinates from file
 	while(getline(setOfPoints, indiv))
@@ -94,7 +91,6 @@ int main()
 			}
 			ssubs = subs.substr(i, '\n');
 			conv = stof(ssubs); 
-			cout << conv << endl;
 			readPoints.push_back(conv);
 		}
 	}
@@ -125,11 +121,19 @@ int main()
 	choice = true;
 	while (choice == true)
 	{
-		cout << endl << "Select your transformations:";
-		cin >> t;
+		do {
+			cout << endl << "Select your transformations:";
+			cin >> t;
+		} while (t < 1 || t > 6);
+
 		transChoices.push_back(t);
-		cout << "Do you want to add another? (y/n): ";
-		cin >> addchoice;
+
+		do {
+			cout << "Do you want to add another? (y/n): ";
+			cin >> addchoice;
+			addchoice = tolower(addchoice);
+		} while (addchoice != 'y' && addchoice != 'n');
+
 		if (addchoice == 'y')
 			choice = true;
 		else
@@ -295,54 +299,6 @@ int main()
 				cin >> arbitAxis.z;
 
 				forCompo.push_back(transf.getRotateQuaternions(radians,arbitAxis.x, arbitAxis.y, arbitAxis.z));
-
-				//normVal = transf.normalize(arbitAxis.x, arbitAxis.y, arbitAxis.z);
-				//forCompo.push_back(transf.getRotateQuaternions(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z));
-				//forCompo.push_back(transf.getRotateArbitrary(radians, arbitAxis.x / normVal, arbitAxis.y / normVal, arbitAxis.z / normVal));
-				/*
-				testbary = computeBarycenter(points);
-				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x ), (testbary.y - arbitAxis.y ), (testbary.z - arbitAxis.z ));
-				rotate = transf.getRotateArbitrary(radians, arbitAxis.x/normVal, arbitAxis.y/normVal, arbitAxis.z/normVal);
-				rotate = transf.multiplyMatrix(oTrans, rotate);
-				*/
-				
-				/*
-				
-				testbary = computeBarycenter(points);
-
-				oTrans = transf.getTranslateMatrix((testbary.x - arbitAxis.x/normVal) * -1, (testbary.y - arbitAxis.y/normVal) * -1, (testbary.z - arbitAxis.z/normVal) * -1); //trans to origin
-				rotate = transf.getRotateMatrix(radians, 'x', false); //rotate about x
-				rotate = transf.multiplyMatrix(oTrans, rotate); //compo trans and rotate x
-
-				rotateZarb = transf.getRotateMatrix(radians, 'z', false); //rotate about z
-				rotate = transf.multiplyMatrix(rotateZarb, rotate); //compo rotate z and rotate x and trans
-
-				zInv = transf.getRotateMatrix(radians, 'z', true); //inverse rotate z
-				rotate = transf.multiplyMatrix(zInv, rotate);
-
-				xInv = transf.getRotateMatrix(radians, 'x', true); //inverse rotate x
-				rotate = transf.multiplyMatrix(xInv, rotate);
-
-				oTrans = transf.getTranslateMatrix(testbary.x/normVal, testbary.y/normVal, testbary.z/normVal);
-				rotate = transf.multiplyMatrix(oTrans, rotate);
-				//oTrans = transf.getTranslateMatrix(testbary.x , testbary.y, (testbary.z)); //back to orig place
-				//rotate = transf.multiplyMatrix(oTrans, rotate);
-				*/
-				/*
-				
-				testbary = computeBarycenter(points);
-				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, (testbary.z) * -1); //trans to origin
-				rotate = transf.getRotateMatrix(radians, 'x'); //rotate about x
-				rotate = transf.multiplyMatrix(oTrans, rotate);
-				rotateYarb = transf.getRotateMatrix(radians, 'y'); //rotate about y
-				rotate = transf.multiplyMatrix(rotate, rotateYarb);
-
-
-				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z));
-				rotate = transf.multiplyMatrix(oTrans, rotate);
-				*/
-				//
-				//rotate = transf.getRotateArbitrary(radians, arbitAxis.x, arbitAxis.y, arbitAxis.z);
 			}
 		}
 	}
@@ -366,47 +322,19 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 
-		//finalCompo.displayMatrix();
-		
-		//finalPts = transf.multiplyMatrix(translateMatrix, scal, false);
-		//finalPts = transf.multiplyMatrix(rotate, finalPts, false);
 		finalPts = transf.multiplyMatrix(finalCompo, coordPts, true);
-		
-		//finalCompo = transf.multiplyMatrix(rotate, scal);
-		//finalCompo = transf.multiplyMatrix(finalCompo, translateMatrix);
-		//finalCompo.displayMatrix();
 
-		//dummyV = transf.multiplyWithCompo(rotate , p);
-		/*
-		
-		if (transChoices[0] == 1)
-		{
-			dummyV.setVectorVals(points[i].x + xTrans, 0);
-			dummyV.setVectorVals(points[i].y + yTrans, 1);
-			dummyV.setVectorVals(points[i].z + zTrans, 2);
-		}
-		*/
-
-		output.x = finalPts.getIndexVal(0, 0);//dummyV.getVectorValue(0); 
-		output.y = finalPts.getIndexVal(1, 0);//dummyV.getVectorValue(1);//
-		output.z = finalPts.getIndexVal(2, 0);//dummyV.getVectorValue(2);//
+		output.x = finalPts.getIndexVal(0, 0);
+		output.y = finalPts.getIndexVal(1, 0);
+		output.z = finalPts.getIndexVal(2, 0);
 		outRot.push_back(output);
 	}
 	
-	
-	//if (willProject == true)
-	//{
-		//call project fxn, nasa baba
-	//}
-
-
-	//write to a file yung final coord values
-	/*
-	cout << "What would you like to name the output file? ";
-	cin >> outName;
-	outName = outName + ".txt";
-	*/
 	ofstream pointsOut("output.txt");
+	if (pointsOut.fail())
+	{
+		cout << "ERROR: CANNOT MAKE OUTPUT FILE. TERMINATING." << endl;
+	}
 	//print here yung results to the txt file
 	for (i = 0; i < points.size(); i++)
 	{
