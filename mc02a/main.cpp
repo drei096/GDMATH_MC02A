@@ -1,7 +1,10 @@
-/*needed to be addressed:
+/*
+* GD-MATH MC02A LINEAR TRANSFORMATION ON 3D POINTS
+* DEVELOPERS:
+*	GAURANA, ALDREY
+*	TALLADOR, ERYN
 * 
-* address natin muna yung matrix multiplication fxn tsaka tayo sa rotation
-* pwede mo paglaruan yung test calls para makuha mo feel ng fxns
+* LAST MODIFIED: 1/12/2021
 */
 
 #include<iostream>
@@ -346,66 +349,3 @@ int main()
 	pointsOut.close();
 	return 0;
 }
-
-
-/* DO NOT DELETE, FOR REFERENCE TO HAHAH
-* for (j = 0; j < points.size(); j++)
-			{
-				Vector pTrans(points[j].x, points[j].y, points[j].z);
-
-			}
-*/
-/* GET ROW TEST
-
-	Matrix test(testf);  //creates a new 4x4 matrix
-	Vector testv(2,3,4);  // creates a dummy 4x1 vector
-	testv.displayVector();   //displays the dummy vector
-	testv = testv.getRow(testf, 1);  //assigns the get row to the dummy vector, getRow params: matrix testf, row na gusto mo
-	testv.displayVector();  // displays the new vector, yung nakuhang row from testf
-
-*/
-/* GENERATES A VECTOR FROM POINTS
-
-	Vector p(points[0].x, points[0].y, points[0].z); //creates a 4x1 column matrix na nagcocontain ng x,y,z and homog coords
-	Vector p2(points[1].x, points[1].y, points[1].z);
-	p.displayVector();
-	cout << endl;
-	p2.displayVector();
-	cout << endl;
-	cout << "dot prod:" << transf.dotProd(p, p2) << endl;     //MAKES THE DOT PRODUCT
-
-	*/
-
-/* FOR XY, XZ, YZ PROJECTION
-
-		for (i = 0; i < points.size(); i++)
-		{
-			vector <point3D> outputPts(projectXY(points));
-			pointsOut << outputPts[i].x << "," << outputPts[i].y << "," << outputPts[i].z << endl;
-			outputXYProj.push_back(outputPts[i]);
-		}
-
-		outputXYProj holds all FINAL projected points, write na lang siya to the file
-	*/
-
-/* FOR PRINTING DISTORT VALUES TO TXT FILE
-
-		for (i = 0; i < points.size(); i++)
-		{
-			pointsOut << outDist[i].x << ',' << outDist[i].y << "," << outDist[i].z << endl;
-		}
-		*/
-
-/* F0R GETTING FINAL VALUES OF DISTORT
-* for (i = 0; i < points.size(); i++)
-	{
-		Vector p(points[i].x, points[i].y, points[i].z);
-		Vector dummyV(1, 3, 5);
-		point3D output;
-		dummyV = transf.multiplyWithCompo(dist,p);
-		output.x = dummyV.getVectorValue(0);
-		output.y = dummyV.getVectorValue(1);
-		output.z = dummyV.getVectorValue(2);
-		outDist.push_back(output);
-	}
-*/
