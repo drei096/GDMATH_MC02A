@@ -27,7 +27,7 @@ typedef struct point3D
 	float x;
 	float y;
 	float z;
-};
+}point3D;
 
 point3D computeBarycenter(vector <point3D> points)
 {
@@ -78,50 +78,63 @@ int main()
 	}
 
 	
-	//read coordinates from file
+	//PARSE AND READ COORDINATES FROM FILE
 	while(getline(setOfPoints, indiv))
 	{
 		stringstream ss(indiv);
 		while (ss.good())
 		{
 			i = 0;
-			getline(ss, subs, ','); //prints a new line after the comma
+			getline(ss, subs, ','); //comma is the delim
+
+			//CHECKS IF INPUT FILE HAS SPHERICAL COORDS, OTHERWISE, SPHERICAL = FALSE
 			if (subs[i] == 's')
 				isSpherical = true;
+
 			while (!isdigit(subs[i]) && subs[i] != '-')
 			{
 				i++;
 			}
+			//EXTRACTS THE NUMERICAL STRING
 			ssubs = subs.substr(i, '\n');
+			//CONVERTS THE STRING TO FLOAT VALUE
 			conv = stof(ssubs); 
+			//ADD THE VALUE TO POINTS VECTOR
 			readPoints.push_back(conv);
 		}
 	}
 	//end
-	//assign read coordinates as point3d
+
+	//ASSIGN READ POINTS AS POINT3D
 	for (size_t i = 0; i < readPoints.size(); i+=3)
 	{
 		point3D pt;
+
+		//CONVERSION OF SPHERICAL TO CARTESIAN
 		if (isSpherical == true)
 		{
 			pt.x = readPoints[i] * sin(readPoints[i+1]) * cos(readPoints[i + 2]);
 			pt.y = readPoints[i] * sin(readPoints[i + 1]) * sin(readPoints[i + 2]);
 			pt.z = readPoints[i] * cos(readPoints[i + 1]);
 		}
+		//CARTESIAN COORDS GET ASSIGNED TO POINT3D
 		else
 		{
 			pt.x = readPoints[i];
 			pt.y = readPoints[i + 1];
 			pt.z = readPoints[i + 2];
 		}
+		//A POINT3D IS INSERTED TO POINTS VECTOR THAT ACCEPTS POINT3D
 		points.push_back(pt);
 	}
 	//end
-	//generate vector matrix per point in points vector
 	
+	//ASK USER FOR DESIRED TRANSFORMATIONS
 	cout << endl << "What transformations would you like to do?" << endl;
 	cout << "[1] Translate" << endl << "[2] Scale" << endl << "[3] Distort" << endl << "[4] Squeeze" << endl << "[5] Project" << endl << "[6] Rotate" << endl;
 	choice = true;
+
+	//PERFORM LOOP UNTIL USER ENTERS 'n'
 	while (choice == true)
 	{
 		do {
@@ -129,6 +142,7 @@ int main()
 			cin >> t;
 		} while (t < 1 || t > 6);
 
+		//CHOICES INPUTTED BY USER GETS INSERTED TO TRANSCHOICES VECTOR
 		transChoices.push_back(t);
 
 		do {
@@ -143,10 +157,11 @@ int main()
 			choice = false;
 	}
 	
-	//perform transformations, return matrices
+	//PERFORM THE TRANSFORMATIONS DESIRED
+	//RETURN TRANSFORM MATRICES TO BE FED TO FORCOMPO VECTOR
 	for (i = 0; i < transChoices.size(); i++)
 	{
-		if (transChoices[i] == 1) //Translate
+		if (transChoices[i] == 1) //TRANSLATION
 		{
 			cout << "=================" << endl << "TRANSLATION" << endl << "=================" << endl;
 			cout << "How much in x,y,z do you want to translate?" << endl;
@@ -159,7 +174,7 @@ int main()
 			forCompo.push_back(transf.getTranslateMatrix(xTrans, yTrans, zTrans));
 			//trans is the translate matrix pushed to the forCompo list
 		}
-		if (transChoices[i] == 2) //Scale
+		if (transChoices[i] == 2) //SCALING
 		{
 			Matrix oTrans(mStruct);
 			cout << "=================" << endl << "SCALING" << endl << "=================" << endl;
@@ -172,7 +187,7 @@ int main()
 			cin >> yTrans;
 			cout << "Z:";
 			cin >> zTrans;
-			if (space == 'o')
+			if (space == 'o') //for object space
 			{
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
@@ -183,10 +198,10 @@ int main()
 				forCompo.push_back(transf.multiplyMatrix(scal, oTrans, false));
 				//scal is the scale matrix, pushed to the forcompo list
 			}
-			else
+			else //for world space
 				forCompo.push_back(transf.getScaleMatrix(xTrans, yTrans, zTrans));
 		}
-		if (transChoices[i] == 3) //Distort
+		if (transChoices[i] == 3) //DISTORTION
 		{
 			cout << "=================" << endl << "DISTORTION" << endl << "=================" << endl;
 			cout << "World space (w) or Object Space (o)? ";
@@ -194,11 +209,15 @@ int main()
 			cout << endl << "In what axis do you want to distort?" << endl;
 			cin >> axischoice;
 			cout << "How much?" << endl;
-			cout << "Amount 1 (xy/yx/zx): ";  //distort on the indicated planes, based on the reference book
+
+			//distort on the indicated planes, based on the reference book
+			// X: xy/xz distort, Y: yx/yz distort, Z: zx/zy distort
+
+			cout << "Amount 1 (xy/yx/zx): ";  
 			cin >> dist1;
 			cout << "Amount 2 (xz/yz/zy): ";
 			cin >> dist2;
-			if (space == 'o')
+			if (space == 'o') //for object space
 			{
 				testbary = computeBarycenter(points);
 				oTrans = transf.getTranslateMatrix(testbary.x * -1, testbary.y * -1, testbary.z * -1);
@@ -207,11 +226,12 @@ int main()
 				oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, testbary.z);
 
 				forCompo.push_back(transf.multiplyMatrix(dist, oTrans, false));
+				//dist is the distort matrix, pushed to the forcompo list
 			}
-			else
+			else //for world space
 				forCompo.push_back(transf.getDistortMatrix(axischoice, dist1, dist2));
 		}
-		if (transChoices[i] == 4) //Squeeze
+		if (transChoices[i] == 4) //SQUEEZE
 		{
 			cout << "=================" << endl << "SQUEEZE" << endl << "=================" << endl;
 			cout << "How much in x,y,z do you want to squeeze?" << endl;
@@ -222,9 +242,9 @@ int main()
 			cout << "Z:";
 			cin >> zSq;
 			forCompo.push_back(transf.getSqueezeMatrix(xSq, ySq, zSq));
-			//sque is the squeeze matrix
+			//sque is the squeeze matrix, pushed to the forcompo list
 		}
-		if (transChoices[i] == 5) //Project
+		if (transChoices[i] == 5) //PROJECT
 		{
 			cout << "=================" << endl << "PROJECTION" << endl << "=================" << endl;
 			cout << "What plane do you want to project to?" << endl;
@@ -235,7 +255,7 @@ int main()
 			cin >> projectChoice;
 			forCompo.push_back(transf.project(projectChoice));
 		}
-		if (transChoices[i] == 6) //Rotate
+		if (transChoices[i] == 6) //ROTATION
 		{
 			cout << "=================" << endl << "ROTATION" << endl << "=================" << endl;
 			cout << "World space (w) or object space (o)?: ";
@@ -248,11 +268,13 @@ int main()
 				cin >> axischoice;
 				cout << "What is the angle of rotation? (in radians): ";
 				cin >> radians;
-				cout << "How many radians away from chosen axis is the rotation axis: ";  //from origin of axis 
+				cout << "How many radians away from chosen axis is the rotation axis: ";  //from origin of chosen axis 
 				cin >> axisOffset;
-				if (space == 'o')
+				if (space == 'o') //if object space
 				{
 					testbary = computeBarycenter(points);
+
+					//translate to object origin
 					if (axischoice == 'x')
 						oTrans = transf.getTranslateMatrix((testbary.x - axisOffset) * -1, testbary.y, testbary.z);
 					else if (axischoice == 'y')
@@ -260,15 +282,18 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, (testbary.z - axisOffset) * -1);
 
+					//perform rotation
 					if (axischoice == 'x')
 						rotate = transf.getRotateQuaternions(radians, 1, 0, 0);
 					if(axischoice == 'y')
 						rotate = transf.getRotateQuaternions(radians, 0, 1, 0);
 					if (axischoice == 'z')
 						rotate = transf.getRotateQuaternions(radians, 0, 0, 1);
-					//rotate = transf.getRotateMatrix(radians, axischoice, false);
+					
+					//update rotate, it is now the product of the translation and rotation
 					rotate = transf.multiplyMatrix(oTrans, rotate, false);
 
+					//translate back to object's original position
 					if (axischoice == 'x')
 						oTrans = transf.getTranslateMatrix(abs(testbary.x - axisOffset), testbary.y, testbary.z);
 					else if (axischoice == 'y')
@@ -276,8 +301,9 @@ int main()
 					else
 						oTrans = transf.getTranslateMatrix(testbary.x, testbary.y, abs(testbary.z - axisOffset));
 
+					
 					forCompo.push_back(transf.multiplyMatrix(rotate, oTrans, false));
-					//rotate = transf.multiplyMatrix(rotate, oTrans, false);
+					//rotate is the rotate matrix, pushed to the forcompo list
 				}
 				else //if rotation is world space
 				{
@@ -287,10 +313,10 @@ int main()
 						forCompo.push_back(transf.getRotateQuaternions(radians, 0, 1, 0));
 					if (axischoice == 'z')
 						forCompo.push_back(transf.getRotateQuaternions(radians, 0, 0, 1));
-					//rotate = transf.getRotateMatrix(radians, axischoice, false);
+					//rotate is the rotate matrix, pushed to the forcompo list
 				}
 			}
-			else //arbitrary axis rotation
+			else //USER CHOSE ARBITRARY AXIS ROTATION
 			{
 				cout << "What is the angle of rotation? (in radians): ";
 				cin >> radians;
@@ -305,14 +331,16 @@ int main()
 			}
 		}
 	}
-	//compose here after
+
+	//MAKE THE FINAL COMPOSED MATRIX
 	finalCompo.get3DIdentity();
 	for (compoIndex = 0; compoIndex < forCompo.size() ; compoIndex++)
 	{
-		finalCompo = transf.multiplyMatrix(finalCompo , forCompo[compoIndex], false);
+		//loop on all transformation matrices and multiply
+		finalCompo = transf.multiplyMatrix(forCompo[compoIndex], finalCompo, false); //forCompo[compoIndex], finalCompo,
 	}
 
-	//assign for writing
+	//MULTIPLY THE FINAL COMPOSED MATRIX TO THE COORDINATES
 	for (i = 0; i < points.size(); i++)
 	{
 		Vector p(points[i].x, points[i].y, points[i].z);
@@ -325,20 +353,23 @@ int main()
 		coordPts.setIndexVal(2, 0, points[i].z);
 		coordPts.setIndexVal(3, 0, 1);
 
+		finalCompo.displayMatrix();
 		finalPts = transf.multiplyMatrix(finalCompo, coordPts, true);
 
+		//assign the answers to point3d
 		output.x = finalPts.getIndexVal(0, 0);
 		output.y = finalPts.getIndexVal(1, 0);
 		output.z = finalPts.getIndexVal(2, 0);
 		outRot.push_back(output);
 	}
 	
+	//CREATE OUTPUT FILE
 	ofstream pointsOut("output.txt");
 	if (pointsOut.fail())
 	{
 		cout << "ERROR: CANNOT MAKE OUTPUT FILE. TERMINATING." << endl;
 	}
-	//print here yung results to the txt file
+	//print results to the txt file
 	for (i = 0; i < points.size(); i++)
 	{
 		pointsOut << outRot[i].x << ',' << outRot[i].y << "," << outRot[i].z << endl;

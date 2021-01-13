@@ -1,13 +1,12 @@
 #pragma once
 #include<iostream>
 #include<vector>
-#define PI 3.141526
 using namespace std;
 
 class Transformations
 {
 public:
-	Matrix getTranslateMatrix(float x, float y, float z)
+	Matrix getTranslateMatrix(float x, float y, float z) //function for matrix translation; returns translated matrix "iden3d"
 	{
 		float mat[4][4];
 		Matrix iden3d(mat);
@@ -19,7 +18,7 @@ public:
 		
 		return iden3d;
 	}
-	Matrix getScaleMatrix(float sx, float sy, float sz)
+	Matrix getScaleMatrix(float sx, float sy, float sz) //function for matrix scaling; returns scaled matrix "iden3d"
 	{
 		float mat[4][4];
 		Matrix iden3d(mat);
@@ -32,7 +31,7 @@ public:
 		
 		return iden3d;
 	}
-	float dotProd(Vector v1, Vector v2)
+	float dotProd(Vector v1, Vector v2) //function for multiplying vector values; returns total value of vector products"sum"
 	{
 		float sum = 0;
 		int i;
@@ -43,7 +42,7 @@ public:
 		return sum;
 	}
 
-	Matrix multiplyMatrix(Matrix m1, Matrix m2, bool ism2Coord) //multiplies 2 4x4 matrices
+	Matrix multiplyMatrix(Matrix m1, Matrix m2, bool ism2Coord) //multiplies 2 4x4 matrices; returns multiplied matrix "productMatrix"
 	{
 		Transformations transf;
 		int rowIndex, colIndex, k=0, i, j;
@@ -94,7 +93,7 @@ public:
 		return productMatrix;
 	}
 
-	Matrix getRotateQuaternions(float theta, float x, float y, float z)
+	Matrix getRotateQuaternions(float theta, float x, float y, float z)//rotation via quaternions; returns rotated matrix "iden3d"
 	{
 		float mat[4][4], normU, qx,qy,qz,qw;
 		Matrix iden3d(mat);
@@ -133,7 +132,7 @@ public:
 		return iden3d;
 	}
 
-	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3
+	Matrix getDistortMatrix(char axis, float amt1st, float amt2nd) //amt1st is from axis 1 to axis 2, amt2nd is axis 1 to axis 3; returns distorted matrix "iden3d"
 	{
 		float mat[4][4];
 		Matrix iden3d(mat);
@@ -159,7 +158,7 @@ public:
 		iden3d.displayMatrix(); //display
 		return iden3d;	 
 	}
-	Matrix getSqueezeMatrix(float sqx, float sqy, float sqz)
+	Matrix getSqueezeMatrix(float sqx, float sqy, float sqz) //function for matrix squeezing; returns squeezed matrix "iden3d"
 	{
 		float mat[4][4];
 		Matrix iden3d(mat);
@@ -173,7 +172,7 @@ public:
 		return iden3d;
 	}
 	
-	Matrix project(int choice)
+	Matrix project(int choice)//function for projection; returns projected matrix of choice "projectXY","projectXZ", or "projectYZ".
 	{
 		float m1[4][4] = {
 		{1.0,0.0,0.0,0.0},
@@ -208,4 +207,3 @@ public:
 			return projectYZ;
 	}
 };
-

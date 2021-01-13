@@ -4,7 +4,7 @@ using namespace std;
 class Matrix
 {
 private:
-	float matrix[4][4]; //4x4 size para kasya sa 3d
+	float matrix[4][4]; //4x4 size for 3d
 public:
 	Matrix(float input[4][4])
 	{
@@ -22,7 +22,7 @@ public:
 			}
 		}
 	}
-	Matrix get3DIdentity()
+	Matrix get3DIdentity() //for getting identity matrix; returns the identity matrix
 	{
 		int i, j;
 		for (i = 0; i < 4; i++)
@@ -37,7 +37,7 @@ public:
 		}
 		return matrix;
 	}
-	void displayMatrix()
+	void displayMatrix() //for displaying matrix
 	{
 		int i, j;
 		for (i = 0; i < 4; i++)
@@ -49,15 +49,15 @@ public:
 			cout << endl;
 		}
 	}
-	void setIndexVal(int x, int y, float val)
+	void setIndexVal(int x, int y, float val) //x is the row position, y is the column position, and val is the value you want to input
 	{
 		matrix[x][y] = val;
 	}
-	float getIndexVal(int xIndex, int yIndex)
+	float getIndexVal(int xIndex, int yIndex) //returns the specific value from the matrix with x and y index
 	{
 		return matrix[xIndex][yIndex];
 	}
-	Matrix getMatrix()
+	Matrix getMatrix() //returning matrix
 	{
 		return matrix;
 	}
